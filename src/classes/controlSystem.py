@@ -1,5 +1,5 @@
 # add the code to control the rc here
 
-class ConstrolSystemModel:
+class ConstrolSystem:
     def __init__(self) -> None:
         pass

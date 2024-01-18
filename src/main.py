@@ -1,8 +1,8 @@
 # Here we will combine all the pipelines and run them in a sequence
-from models.detectionModel import DetectionModel
+from classes.detectionModel import DetectionModel
 
 # Initialize
 model = DetectionModel()
-results = model.detect('./src/models/download.jpg')
+results = model.detect('./tests/download.jpg')
 
 print(results)

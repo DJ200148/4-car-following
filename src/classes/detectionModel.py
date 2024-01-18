@@ -1,7 +1,7 @@
 from ultralytics import YOLO
 import cv2
 import numpy as np
-
+import os
 class DetectionModel:
     def __init__(self, model_name='yolov8m.pt'):
         self.model = YOLO(model_name)
@@ -38,7 +38,9 @@ class DetectionModel:
     def save_results(self, image, filepath):
         # Save the image
         cv2.imwrite(filepath, image)
-            
+    
+    
+    # Extra methods
     def save_model(self, filepath):
         self.model.save(filepath)
 
