@@ -2,20 +2,29 @@
 from serial import Serial, SerialException
 import geopy
 from geopy.geocoders import Nominatim
+import googlemaps
+from dotenv import load_dotenv
+import os
+import polyline
 
-geolocator = Nominatim(user_agent="car_driving")
-location = geolocator.geocode("Davis Ca")
-print((location.latitude, location.longitude))
+load_dotenv()  # Loads the .env file
 
+api_key = os.getenv('GOOGLE_API_KEY')
+
+gmaps = googlemaps.Client(key = api_key)
+list_lat = []
+list_long = []
+destination = "Silo Market, University of California, Davis, Silo South, Davis, CA 95616"
 try:
     gps = Serial('com6',baudrate =9600)
-    destination = '1600 Amphitheatre Parkway, Mountain View, CA'
+    first = True
     while True:
 
         unenc_data = gps.readline()
         decodedata = unenc_data.decode("utf-8")
         data = decodedata.split(",")
         if data[0] == '$GPRMC' and data[3] != '' and data[5] != '':
+
             lat_nmea = data[3]
             lat_degrees = lat_nmea[:2]
             if data[4] == 'S':
@@ -28,9 +37,7 @@ try:
             lat_mmm = str(lat_mmm).strip('0.')[:8]
             latitude = latitude_degrees + "." + lat_mmm
             long_nmea = data[5]
-            print(long_nmea)
             long_degrees = long_nmea[:3]
-            print(long_degrees)
             if data[6] == 'W':
                 longitude_degrees = float(long_degrees)*-1
             else:
@@ -40,7 +47,38 @@ try:
             long_mmm = float(long_ddd)/60
             long_mmm = str(long_mmm).strip('0.')[:8]
             longitude = longitude_degrees + "." + long_mmm
-            print("Longitude: " + longitude + " Latitude: " + latitude)        
+            if(first):
+                print(data)
+                print("once")
+                first = False
+                directions = gmaps.directions(latitude+","+longitude,destination,mode='walking')
+                Direction_queue = []
+                for steps in directions[0]['legs'][0]['steps']:
+                    line = steps['polyline']['points']
+                    decode_line = polyline.decode(line, 10)
+                    for coor in decode_line:
+                        true_coor = tuple(i*100000 for i in coor)
+                        Direction_queue.append(true_coor)
+                    print(true_coor)
+            cur_Long = float(longitude)
+            cur_Lat = float(latitude)
+            lat_check = abs(cur_Lat - Direction_queue[0][0]) 
+            long_check = abs(cur_Long - Direction_queue[0][1])
+            print(len(Direction_queue))
+            print(Direction_queue[0][0])
+            print(lat_check," ",long_check)
+            check = 6*10**-5
+            print(check)
+            if(lat_check <= check and long_check <= check):
+                print("yes")
+                Direction_queue.pop(0)
+            #list_lat.append(lat_check)
+            #list_long.append(long_check)
+            #print(min(list_lat)," MIN ", min(list_long))
+            #print(max(list_lat),"  MAX  ",max(list_long))
+            #print(sum(list_lat)/len(list_lat),"  AVG  ",sum(list_long)/len(list_long))
+            
+
 except SerialException:
     print("theres no gps connected")
  
