@@ -3,11 +3,15 @@ import sys
 
 # List of libraries you want to ensure are installed
 required_libraries = [
-    "numpy",
-    "python-dotenv",
-    "ultralytics",
-    "adafruit-circuitpython-servokit",
-    "googlemaps"
+    "numpy", # numerical computing
+    "python-dotenv", # environment variables
+    "ultralytics", # yolo model
+    "adafruit-circuitpython-servokit", # servo control
+    "googlemaps", # gps
+    "opencv-contrib-python", # computer vision
+    "pyrealsense2", # depth camera
+    "pyserial", # serial communication
+    "geopy", # geolocation tools
 ]
 
 def install(package):
