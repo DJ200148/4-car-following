@@ -1,6 +1,9 @@
-# Here we will combine all the pipelines and run them in a sequence
-from classes.detectionModel import DetectionModel
+from classes.detection_model import DetectionModel
+from classes.control_system import ConstrolSystem
 from Gps.Gps import Gps
+
+
+# Here we will combine all the pipelines and run them in a sequence
 
 # Real time is 24 fps
 
@@ -22,10 +25,10 @@ from Gps.Gps import Gps
 
 # Initialize
 yolo_model = DetectionModel()
-gps_model = Gps()
-camera_model = CameraModel()
-rc_model = RCModel()
-    
+gps = Gps()
+camera = CameraModel()
+rc_control_system = ConstrolSystem()
+
 while True:
     # get image
     pass

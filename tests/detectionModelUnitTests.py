@@ -1,4 +1,4 @@
-from src.classes.detectionModel import DetectionModel
+from classes.detection_model import DetectionModel
 
 def detect_test():
     # Initialize

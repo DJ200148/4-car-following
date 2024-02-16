@@ -2,6 +2,7 @@ from ultralytics import YOLO
 import cv2
 import numpy as np
 import os
+
 class DetectionModel:
     def __init__(self, model_name='yolov8m.pt'):
         self.model = YOLO(model_name)
