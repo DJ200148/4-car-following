@@ -1,12 +1,7 @@
 # Here we will combine all the pipelines and run them in a sequence
 
 # Imports
-from classes.yolo_model import YoloModel
-from classes.control_system import ConstrolSystem
-from classes.gps import GPS
-from classes.depth_camera import DepthCamera
-from classes.depth_detection import DepthDetection
-from classes.google_maps_system import GoogleMapsSystem
+
 
 
 #### NOTES ####

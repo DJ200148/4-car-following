@@ -1,63 +1,3 @@
-# import torch
-# import cv2
-# import numpy as np
-# from pathlib import Path
-# import torchvision.transforms as transforms
-# import PIL.Image as Image
-
-# # Assuming lib is a module in your project containing the necessary functions and model definitions
-# from lib.config import cfg, update_config
-# from lib.models import get_net
-# from lib.core.general import non_max_suppression, scale_coords
-# from lib.utils.utils import select_device
-
-# class YOLOPModel:
-#     def __init__(self, weights_path, device='cpu', img_size=640, conf_thres=0.25, iou_thres=0.45):
-#         self.device = select_device(device=device)
-#         self.img_size = img_size
-#         self.conf_thres = conf_thres
-#         self.iou_thres = iou_thres
-#         self.model = self.load_model(weights_path)
-#         self.transform = transforms.Compose([
-#             transforms.ToTensor(),
-#             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-#         ])
-    
-#     def load_model(self, weights_path):
-#         model = get_net(cfg)
-#         checkpoint = torch.load(weights_path, map_location=self.device)
-#         model.load_state_dict(checkpoint['state_dict'])
-#         model = model.to(self.device)
-#         model.eval()
-#         return model
-
-#     def process_image(self, img_path):
-#         img = Image.open(img_path).convert('RGB')
-#         img = self.transform(img).to(self.device)
-#         if img.ndimension() == 3:
-#             img = img.unsqueeze(0)
-
-#         with torch.no_grad():
-#             det_out, da_seg_out, ll_seg_out = self.model(img)
-        
-#         # Add your post-processing here
-#         # For simplicity, this example will not include the detailed post-processing
-#         # like non_max_suppression, segmentation mask processing, etc.
-
-#         return det_out, da_seg_out, ll_seg_out
-
-# # Example usage
-# if __name__ == "__main__":
-#     # Initialize the processor
-#     processor = YOLOPModel(weights_path='weights/End-to-end.pth', device='cpu')
-    
-#     # Process an image
-#     det_out, da_seg_out, ll_seg_out = processor.process_image('test.jpg')
-    
-#     # Here, you would add code to handle the outputs (det_out, da_seg_out, ll_seg_out)
-#     # For example, visualize the results, save the output, etc.
-
-
 import torch
 import cv2
 import os
@@ -76,10 +16,7 @@ from lib.utils import plot_one_box,show_seg_result
 from lib.core.postprocess import morphological_process, connect_lane
 
 
-
-
-
-class ImageSegmenter:
+class YolopModel:
     def __init__(self, weights, img_size=640, conf_thres=0.25, iou_thres=0.45, device='cpu', save_dir='inference/output'):
         self.weights = weights
         self.img_size = img_size
@@ -174,7 +111,7 @@ class ImageSegmenter:
             cv2.imwrite(save_path,img_det)
 
         
-if __name__ == "__main__":
-    # Initialize the segmenter
-    segmenter = ImageSegmenter(weights='weights/End-to-end.pth', img_size=640, conf_thres=0.25, iou_thres=0.45, device='cpu', save_dir='inference/output')
-    segmenter.process_image('test.jpg')
+# if __name__ == "__main__":
+#     # Initialize the segmenter
+#     segmenter = ImageSegmenter(weights='weights/End-to-end.pth', img_size=640, conf_thres=0.25, iou_thres=0.45, device='cpu', save_dir='inference/output')
+#     segmenter.process_image('test.jpg')
