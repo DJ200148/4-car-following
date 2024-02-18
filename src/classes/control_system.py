@@ -4,8 +4,10 @@ import busio
 
 MAX_THROTTLE = 60
 MIN_THROTTLE = 0
+BASE_THROTTLE = 30
 MAX_TURN_ANGLE = 90
 MIN_TURN_ANGLE = 0
+BASE_TURN_ANGLE = 45
 SERVO_CHANNEL = 0
 THROTTLE_CHANNEL = 1
 
@@ -17,9 +19,13 @@ class ConstrolSystem:
         self.kit = ServoKit(channels=16, address=0x40, i2c=i2c_bus)
         print("Initializing Controller")
 
-    def forward(self, speed):
+    def forward(self, speed=BASE_THROTTLE):
         speed = max(MIN_THROTTLE, min(MAX_THROTTLE, speed))
         self.kit.continuous_servo[THROTTLE_CHANNEL].throttle = speed / 100
+
+    def reverse(self, speed=BASE_THROTTLE):
+        speed = max(MIN_THROTTLE, min(MAX_THROTTLE, speed))
+        self.kit.continuous_servo[THROTTLE_CHANNEL].throttle = -speed / 100
         
     def brake(self):
         self.kit.continuous_servo[THROTTLE_CHANNEL].throttle = 0
@@ -27,11 +33,11 @@ class ConstrolSystem:
     def turn_center(self):
         self.kit.servo[SERVO_CHANNEL].angle = 90
         
-    def turn_left(self, angle):
+    def turn_left(self, angle=BASE_TURN_ANGLE):
         angle = max(MIN_TURN_ANGLE, min(MAX_TURN_ANGLE, angle))
         self.kit.servo[SERVO_CHANNEL].angle = 90 - angle
         
-    def turn_right(self, angle):
+    def turn_right(self, angle=BASE_TURN_ANGLE):
         angle = max(MIN_TURN_ANGLE, min(MAX_TURN_ANGLE, angle))
         self.kit.servo[SERVO_CHANNEL].angle = 90 + angle
     
