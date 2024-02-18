@@ -1,7 +1,7 @@
 # Here we will combine all the pipelines and run them in a sequence
 
 # Imports
-
+from classes.autonomous_rc_controller import AutonomousRCController
 
 
 #### NOTES ####
@@ -26,12 +26,8 @@
 # Constants
 STOP = False
 
-# Initialize
-yolo_model = DetectionModel()
-gps = Gps()
-camera = CameraModel()
-rc_control_system = ConstrolSystem()
-
+# Init the controller
+controller = AutonomousRCController()
 
 while True:
 

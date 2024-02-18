@@ -2,7 +2,7 @@ from classes.yolo_model import YoloModel
 
 def detect_test():
     # Initialize
-    model = DetectionModel()
+    model = YoloModel()
     results = model.detect('.\\tests\\download.jpg')
     # print(results)
     new_image = model.draw_detections(results[0])
