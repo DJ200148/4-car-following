@@ -1,4 +1,4 @@
-from classes.detection_model import DetectionModel
+from classes.yolo_model import DetectionModel
 
 def detect_test():
     # Initialize

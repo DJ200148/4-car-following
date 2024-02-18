@@ -12,6 +12,9 @@ required_libraries = [
     "pyrealsense2", # depth camera
     "pyserial", # serial communication
     "geopy", # geolocation tools
+    "onnxruntime", # onnx model runtime
+    "torch", # pytorch
+    "torchvision", # pytorch vision
 ]
 
 failed_libraries = []
