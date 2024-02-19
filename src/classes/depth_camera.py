@@ -6,16 +6,16 @@ class DepthCamera:
     def __init__(self, depth_width=640, depth_height=480, depth_fps=30, color_width=640, color_height=480, color_fps=30):
         # Initialize camera pipeline
         self.pipeline = rs.pipeline()
-        config = rs.config()
+        self.config = rs.config()
         
         # Configure depth and color streams with passed parameters
-        config.enable_stream(rs.stream.depth, depth_width, depth_height, rs.format.z16, depth_fps)
-        config.enable_stream(rs.stream.color, color_width, color_height, rs.format.bgr8, color_fps)
+        self.config.enable_stream(rs.stream.depth, depth_width, depth_height, rs.format.z16, depth_fps)
+        self.config.enable_stream(rs.stream.color, color_width, color_height, rs.format.bgr8, color_fps)
         
         # Start the camera pipeline with the given configurations
-        self.pipeline.start(config)
+        self.pipeline.start(self.config)
     
-    def get_image(self):
+    def get_image_data(self): 
         # Wait for a coherent pair of frames: depth and color
         frames = self.pipeline.wait_for_frames()
         depth_frame = frames.get_depth_frame()
@@ -23,7 +23,7 @@ class DepthCamera:
         
         # Check if both frames are available
         if not depth_frame or not color_frame:
-            raise RuntimeError('Could not acquire depth or color frames.')
+            return None, None, None 
         
         # Convert images to numpy arrays
         depth_image = np.asanyarray(depth_frame.get_data())

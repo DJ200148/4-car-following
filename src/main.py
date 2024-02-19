@@ -25,16 +25,14 @@ from classes.autonomous_rc_controller import AutonomousRCController
 
 # Constants
 STOP = False
+START_CORDS = (0, 0)
 
-# Init the controller
-controller = AutonomousRCController()
-
-while True:
-
-    # If the system is stopped, then wait
-    while STOP:
+if __name__ == "__main__":
+    controller = AutonomousRCController()
+    controller.start(START_CORDS)
+    while True:
+        if STOP:
+            controller.stop()
+            break
+        
         pass
-
-
-    # get image
-    pass

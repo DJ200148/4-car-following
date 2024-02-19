@@ -41,9 +41,6 @@ class YolopModel:
         model.eval()  # Set the model to evaluation mode
         return model
 
-    def detect(self, image):
-        pass
-
     def process_image(self, image_path):
         # clear the output directory
         if os.path.exists(self.save_dir):  # output dir
@@ -112,3 +109,14 @@ class YolopModel:
                     plot_one_box(xyxy, img_det , label=label_det_pred, color=colors[int(cls)], line_thickness=2)
             
             cv2.imwrite(save_path,img_det)
+
+        
+# if __name__ == "__main__":
+#     # Initialize the segmenter
+#     segmenter = ImageSegmenter(weights='weights/End-to-end.pth', img_size=640, conf_thres=0.25, iou_thres=0.45, device='cpu', save_dir='inference/output')
+#     segmenter.process_image('test.jpg')
+
+# from classes.yolop_model import YolopModel
+
+# model = YolopModel(weights='weights/End-to-end.pth', img_size=640, conf_thres=0.25, iou_thres=0.45, device='cpu', save_dir='inference/output')
+# model.process_image('images/main-qimg-e3fb8611e739c86330bc21ce1f50afe2-lq.jpg')

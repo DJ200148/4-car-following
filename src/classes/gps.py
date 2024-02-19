@@ -49,6 +49,14 @@ class GPS:
             self.update()
         return self.last_valid_coordinates
 
-    def close(self):
+    def restart(self):
+        """Safely attempt to start the GPS connection if it's not already open."""
+        if not self.gps.is_open:
+            try:
+                self.gps.open()
+            except SerialException as e:
+                print(f"Failed to open GPS serial connection: {e}")
+
+    def stop(self):
         """Close the GPS connection."""
         self.gps.close()
