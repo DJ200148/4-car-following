@@ -2,6 +2,7 @@ import torch
 import cv2
 import os
 import shutil
+import numpy as np
 from pathlib import Path
 import torchvision.transforms as transforms
 from numpy import random
@@ -42,7 +43,48 @@ class YolopModel:
         return model
 
     def detect(self, image):
-        pass
+        # Prepare the image
+        img_original = img.copy()  # Keep an original copy for scaling results back
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)  # Convert BGR to RGB
+        img = image.fromarray(img)  # Convert to PIL image
+        img_transformed = self.transform(img).to(self.device)  # Apply transformations
+        img_transformed = img_transformed.half() if self.half else img_transformed.float()  # uint8 to fp16/32
+        img_transformed = img_transformed.unsqueeze(0)  # Add batch dimension
+
+        # Inference
+        with torch.no_grad():  # Inference without gradient calculation
+            det_out, da_seg_out, ll_seg_out = self.model(img_transformed)
+
+        # Process detection output
+        inf_out, _ = det_out
+        det_pred = non_max_suppression(inf_out, conf_thres=self.conf_thres, iou_thres=self.iou_thres, classes=None, agnostic=False)
+        det = det_pred[0]
+
+        detections = []
+        if len(det):
+            det[:, :4] = scale_coords(img_transformed.shape[2:], det[:, :4], img_original.shape[:2]).round()
+            for *xyxy, conf, cls in reversed(det):
+                label = f'{self.model.names[int(cls)]} {conf:.2f}'
+                box = [coord.item() for coord in xyxy]  # Convert tensor to list
+                detections.append({'box': box, 'label': label, 'confidence': conf.item(), 'class': cls.item()})
+
+        # Process segmentation output
+        # Assuming da_seg_out and ll_seg_out are segmentation masks, convert them to numpy arrays.
+        # This example assumes the output is a single channel mask, you might need to adjust based on your model output.
+        da_seg_mask = da_seg_out.squeeze().cpu().numpy()
+        ll_seg_mask = ll_seg_out.squeeze().cpu().numpy()
+
+        # Post-process segmentation masks if necessary (e.g., thresholding, morphological operations)
+        # Example: Convert segmentation logits to binary mask (you may need to adjust this based on your model's output)
+        da_seg_mask = (da_seg_mask > 0.5).astype(np.uint8)  # Dummy thresholding example
+        ll_seg_mask = (ll_seg_mask > 0.5).astype(np.uint8)  # Dummy thresholding example
+
+        # Return both detections and segmentation data
+        return {
+            'detections': detections,
+            'da_seg_mask': da_seg_mask,
+            'll_seg_mask': ll_seg_mask
+        }
 
     def process_image(self, image_path):
         # clear the output directory
