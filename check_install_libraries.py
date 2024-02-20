@@ -15,6 +15,10 @@ required_libraries = [
     "onnxruntime", # onnx model runtime
     "torch", # pytorch
     "torchvision", # pytorch vision
+    "prefetch_generator", # prefetch data
+    "yacs", # yet another configuration system
+    "scikit-learn", # machine learning
+    "Flask", # web framework
 ]
 
 failed_libraries = []

@@ -3,7 +3,7 @@ class GoogleMaps:
         pass
 
     def get_corrdinates(self, address):
-        '''This method will return the coordinates of the address. (Lat,Long)'''
+        '''This method will return the coordinates of the address. output: (Lat,Long)'''
         pass
 
     def get_directions(self, start, end):

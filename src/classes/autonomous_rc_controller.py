@@ -5,7 +5,7 @@ from classes.yolop_model import YolopModel
 from classes.control_system import ConstrolSystem
 from classes.gps import GPS
 from classes.depth_camera import DepthCamera
-from src.classes.also_detection_helper import DepthDetection
+from classes.algo_detection_helper import AlgoDetectionHelper
 from classes.google_maps import GoogleMaps
 
 # Use Cases:
@@ -21,7 +21,7 @@ class AutonomousRCController:
         self.yolop_model = YolopModel()
         self.gps = GPS()
         self.depth_camera = DepthCamera()
-        self.depth_detection = DepthDetection()
+        self.depth_detection = AlgoDetectionHelper()
         self.google_maps = GoogleMaps()
 
         # Init threads
@@ -35,8 +35,26 @@ class AutonomousRCController:
         self.start_cords = self.gps.get_coordinates()
         self.end_cords
         self.current_cords = self.start_cords
+        self.previous_cords = self.start_cords
         self.path
         self.directions
+        
+        # wait for all components to be ready
+        sleep(60)
+        
+    def reset(self):
+        # Init threads
+        self.pause_event = Event()  # This event controls the pause state.
+        self.stop_event = Event()  # This event controls the stop state to safely exit the loop.
+        self.thread = Thread(target=self.run)  # Thread running the run method
+        # Set the event at the start so the loop runs
+        self.pause_event.set()
+
+        # Init the start and end cords
+        self.start_cords = self.gps.get_coordinates()
+        self.current_cords = self.start_cords
+        self.previous_cords = self.start_cords
+        
 
     # Operations
     def start(self, end_cords):
@@ -45,7 +63,7 @@ class AutonomousRCController:
         self.path = self.google_maps.directions_to_path(self.directions)
 
         # calibrate the position of the RC
-        self.calibrate_position()
+        # self.calibrate_position()
 
         # start normal pipeline
         self.thread.start()
@@ -65,9 +83,9 @@ class AutonomousRCController:
         self.gps.stop()
         self.depth_camera.stop()
     
-    def calibrate_position(self):
-        # JAMES: You can implement this method to a get the RC car to the correct position
-        pass
+    # def calibrate_position(self):
+    #     # JAMES: You can implement this method to a get the RC car to the correct position
+    #     pass
 
     # The main loop
     def run(self):
