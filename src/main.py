@@ -25,14 +25,14 @@ from classes.autonomous_rc_controller import AutonomousRCController
 
 # Constants
 STOP = False
-START_CORDS = (0, 0)
+END_CORDS = (0, 0)
 
 if __name__ == "__main__":
     controller = AutonomousRCController()
-    controller.start(START_CORDS)
+    controller.start(END_CORDS)
     while True:
         if STOP:
             controller.stop()
             break
-        
+
         pass

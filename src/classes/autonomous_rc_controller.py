@@ -43,6 +43,11 @@ class AutonomousRCController:
         self.end_cords = end_cords
         self.directions = self.google_maps.get_directions(self.start_cords, self.end_cords)
         self.path = self.google_maps.directions_to_path(self.directions)
+
+        # calibrate the position of the RC
+        self.calibrate_position()
+
+        # start normal pipeline
         self.thread.start()
 
     def pause(self):
@@ -60,6 +65,10 @@ class AutonomousRCController:
         self.gps.stop()
         self.depth_camera.stop()
     
+    def calibrate_position(self):
+        # JAMES: You can implement this method to a get the RC car to the correct position
+        pass
+
     # The main loop
     def run(self):
         while not self.stop_event.is_set():
