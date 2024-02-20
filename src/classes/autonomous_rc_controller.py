@@ -80,6 +80,8 @@ class AutonomousRCController:
         # Gather data for the decision
         color_image, depth_image, depth_colormap = self.depth_camera.get_image_data()
         objects = self.yolop_model.detect(color_image)
+
+        # Make a decision
         if self.should_turn_left():
             self.rc.turn_left()
         elif self.should_turn_right():
