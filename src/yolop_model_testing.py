@@ -114,7 +114,7 @@ class YolopModel:
 if __name__ == "__main__":
     # Initialize the segmenter
     segmenter = YolopModel(weights='weights/End-to-end.pth', img_size=640, conf_thres=0.25, iou_thres=0.45, device='cpu', save_dir='inference/output')
-    segmenter.process_image('images/test_road2.jpg')
+    segmenter.process_image('images/test_road2.jpg') # 1280x720
 
 # from classes.yolop_model import YolopModel
 
