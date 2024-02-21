@@ -19,6 +19,16 @@ required_libraries = [
     "yacs", # yet another configuration system
     "scikit-learn", # machine learning
     "Flask", # web framework
+    "Adafruit-Blinka==6.15.0", # adafruit lib
+    "adafruit-circuitpython-busdevice==5.1.1", # adafruit lib
+    "adafruit-circuitpython-motor==3.3.4", # adafruit lib
+    "adafruit-circuitpython-pca9685==3.4.0", # pca9685 driver
+    "adafruit-circuitpython-register==1.9.7", # adafruit lib
+    "adafruit-circuitpython-servokit==1.3.6", # adafruit lib
+    "Adafruit-PlatformDetect==3.19.4",# adafruit lib
+    "Adafruit-PureIO==1.1.9", # adafruit lib
+    "approxeng.input==2.6.3", # adafruit lib
+    "PyYAML==6.0", # required library for approxeng
 ]
 
 failed_libraries = []
