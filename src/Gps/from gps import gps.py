@@ -14,7 +14,14 @@ api_key = os.getenv('GOOGLE_API_KEY')
 gmaps = googlemaps.Client(key = api_key)
 list_lat = []
 list_long = []
+start = "2063, Davis, CA 95616"
 destination = "Silo Market, University of California, Davis, Silo South, Davis, CA 95616"
+directions = gmaps.directions(start,destination,mode='walking')
+Direction_queue = []
+for steps in directions[0]['legs'][0]['steps']:
+    line = steps['polyline']['points']
+    decode_line = polyline.decode(line, 5)
+    print(decode_line)
 try:
     gps = Serial('com6',baudrate =9600)
     first = True
