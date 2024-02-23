@@ -1,5 +1,6 @@
 from threading import Thread, Event
 from time import sleep
+import numpy as np
 # Classes
 from classes.yolop_model import YolopModel
 from classes.control_system import ConstrolSystem
@@ -128,4 +129,8 @@ class AutonomousRCController:
 
     # def should_speed_up(self):
     #     pass
-
+    def get_orientation(coor, compared_coor):
+        """based off of 2 given coordinates calculates degree to 2nd coordinate N=0"""
+        new_origin_coor = (compared_coor[0] - coor[0],compared_coor[1]-coor[1])
+        orientation = np.mod(np.degrees(np.arctan2(new_origin_coor[1],new_origin_coor[0])),360)
+        return orientation
