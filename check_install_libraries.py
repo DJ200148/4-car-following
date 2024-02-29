@@ -27,8 +27,9 @@ required_libraries = [
     "adafruit-circuitpython-servokit==1.3.6", # adafruit lib
     "Adafruit-PlatformDetect==3.19.4",# adafruit lib
     "Adafruit-PureIO==1.1.9", # adafruit lib
-    "approxeng.input==2.6.3", # adafruit lib
+    "approxeng.input", # adafruit lib ==2.6.3
     "PyYAML==6.0", # required library for approxeng
+    "pathfinding", # pathfinding
 ]
 
 failed_libraries = []
