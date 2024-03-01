@@ -9,15 +9,20 @@ BASE_THROTTLE = 30
 
 # Servo Turn Angles
 MAX_TURN_ANGLE = 90
+CENTER_TURN_ANGLE = 0
 MIN_TURN_ANGLE = -90
-CENTER_TURN_ANGLE = 90
+BASE_TURN_ANGLE = 90
+
+
 
 # Servo Channels
 SERVO_CHANNEL = 0
 THROTTLE_CHANNEL = 1
 
 class ConstrolSystem:
-    def __init__(self):
+    def __init__(self, offset):
+        # Postive offset goes right
+        self.offset = offset
         print("Initializing Control System")
         i2c_bus = busio.I2C(board.SCL, board.SDA)
         print("Initializing Servo Kit")
@@ -37,9 +42,9 @@ class ConstrolSystem:
         self.kit.continuous_servo[THROTTLE_CHANNEL].throttle = 0
     
     def turn_center(self):
-        self.kit.servo[SERVO_CHANNEL].angle = CENTER_TURN_ANGLE
+        self.kit.servo[SERVO_CHANNEL].angle = BASE_TURN_ANGLE + self.offset
     
     def turn(self, angle=CENTER_TURN_ANGLE):
         angle = max(MIN_TURN_ANGLE, min(MAX_TURN_ANGLE, angle))
-        self.kit.servo[SERVO_CHANNEL].angle = CENTER_TURN_ANGLE + angle
+        self.kit.servo[SERVO_CHANNEL].angle = BASE_TURN_ANGLE + angle + self.offset
         

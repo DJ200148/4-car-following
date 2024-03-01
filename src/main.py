@@ -3,7 +3,7 @@
 # Imports
 from classes.autonomous_rc_controller import AutonomousRCController
 from flask import Flask, jsonify, request, render_template
-
+import threading
 
 
 #### NOTES ####
@@ -32,9 +32,14 @@ INDEX_HTML_PATH = 'index.html'
 app = Flask(__name__, template_folder='../templates')
 
 # Initialize the RC Controller
-controller = AutonomousRCController(5) # this takes at least 60 seconds to initialize
+controller = AutonomousRCController(init_delay=5, threshold=700, offset=5) # this takes at least 60 seconds to initialize
 print("RC Controller Initialized.")
 
+
+
+
+
+# Flask endpoints
 @app.route('/')
 def index():
     return render_template(INDEX_HTML_PATH)
@@ -98,5 +103,21 @@ def stop():
         return jsonify({'error': str(e)}), 500
 
 
-if __name__ == "__main__":
+def run_flask():
     app.run(debug=True, host='0.0.0.0', port=5000)
+   
+
+if __name__ == "__main__":
+    controller.start((0,0))
+    
+    while not STOP:
+        pass
+    
+    
+    # flask_thread = threading.Thread(target=run_flask)
+    # flask_thread.start()
+
+    # while not STOP:
+    #     pass
+
+    # flask_thread.join()

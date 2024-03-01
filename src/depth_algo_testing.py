@@ -1,19 +1,28 @@
 from classes.depth_camera import DepthCamera
+from classes.algo_detection_helper import AlgoDetectionHelper
 import cv2
+import time
 
 
 cam = DepthCamera()
+algo = AlgoDetectionHelper()
 print("Camera Initialized.")
-color_image, depth_image, depth_colormap = cam.get_image_data()
-print("Image Data Gathered.")
-# Display the images
-cv2.imshow('Color Image', color_image)
-cv2.imshow('Depth Colormap', depth_colormap)  # Display the depth colormap for visualization
 
 while True:
-    # wait for the user to press 'q' to quit
+
+    color_image, depth_image, depth_colormap = cam.get_image_data()
+    cv2.imshow('Depth Colormap', depth_colormap)
+    # cv2.imshow('Depth Image', depth_image)
+    
+    direction = algo.get_turn_direction_from_depth_data(depth_image, threshold=700)
+
+    print(direction)
+
+
+    # If the 'q' key is pressed, break out of the loop
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-cam.stop()  # Ensure to stop the camera after exiting the loop
-cv2.destroyAllWindows()  # Close all OpenCV windows
+# Close all OpenCV windows
+cv2.destroyAllWindows()
+

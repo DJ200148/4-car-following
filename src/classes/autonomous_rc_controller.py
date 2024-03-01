@@ -1,9 +1,10 @@
 from threading import Thread, Event
 from time import sleep
 import numpy as np
+import cv2
 # Classes
 # from classes.yolop_model import YolopModel
-# from classes.control_system import ConstrolSystem
+from classes.control_system import ConstrolSystem
 from classes.gps import GPS
 from classes.depth_camera import DepthCamera
 from classes.algo_detection_helper import AlgoDetectionHelper
@@ -17,11 +18,13 @@ from classes.google_maps import GoogleMaps
 
 
 class AutonomousRCController:
-    def __init__(self, init_delay=60):
-        # self.rc = ConstrolSystem()
+    def __init__(self, init_delay=60, threshold=1000, offset=5):
+        self.threshold = threshold
+        
+        self.rc = ConstrolSystem(offset)
         # self.yolop_model = YolopModel()
         # self.gps = GPS(port='/dev/ttyUSB0')
-        # self.depth_camera = DepthCamera()
+        self.depth_camera = DepthCamera()
         self.depth_detection = AlgoDetectionHelper()
         # self.google_maps = GoogleMaps()
 
@@ -41,6 +44,7 @@ class AutonomousRCController:
         # self.directions
         
         # wait for all components to be ready
+        print("Sleeping on controller init.")
         sleep(init_delay)
         
     def reset(self):
@@ -49,7 +53,7 @@ class AutonomousRCController:
         self.stop_event = Event()  # This event controls the stop state to safely exit the loop.
         self.thread = Thread(target=self.run)  # Thread running the run method
         # Set the event at the start so the loop runs
-        self.pause_event.set()
+        self.pause_evedepth_imagent.set()
 
         # Init the start and end cords
         # self.start_cords = self.gps.get_coordinates()
@@ -90,16 +94,33 @@ class AutonomousRCController:
 
     # The main loop
     def run(self):
-        while not self.stop_event.is_set():
-            self.pause_event.wait()  # Wait will block if the event is cleared, simulating a pause
-            self.decide_action()
-            sleep(0.1)  # Adjust the sleep time as needed
+        try:
+            while not self.stop_event.is_set():
+                self.pause_event.wait()  # Wait will block if the event is cleared, simulating a pause
+                self.decide_action()
+                # sleep(0.1)  # Adjust the sleep time as needed
+        except KeyboardInterrupt:
+            self.rc.brake()
 
     def decide_action(self):
         # Gather data for the decision
-        # color_image, depth_image, depth_colormap = self.depth_camera.get_image_data()
-        # objects = self.yolop_model.detect(color_image)
+        color_image, depth_image, depth_colormap = self.depth_camera.get_image_data()
+        cv2.imshow('Depth Colormap', depth_colormap)
+        direction = self.depth_detection.get_turn_direction_from_depth_data(depth_image, self.threshold)
+        print(direction)
         
+        if direction == 'forward':
+            self.rc.turn()
+            self.rc.forward(60)
+        elif direction == 'right':
+            self.rc.turn(35)
+            self.rc.forward(60)
+        elif direction == 'left':
+            self.rc.turn(-35)
+            self.rc.forward(60)
+        else:
+            self.rc.brake()
+
         # Make a decision
         # if self.should_turn_left():
         #     self.rc.turn_left()
