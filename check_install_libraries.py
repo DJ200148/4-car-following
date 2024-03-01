@@ -8,6 +8,7 @@ required_libraries = [
     "ultralytics", # yolo model
     "adafruit-circuitpython-servokit", # servo control
     "googlemaps", # gps
+    "polyline", # polyline encoding
     "opencv-contrib-python", # computer vision
     "pyrealsense2", # depth camera
     "pyserial", # serial communication

@@ -1,9 +1,9 @@
 # Here we will combine all the pipelines and run them in a sequence
 
 # Imports
-# from classes.autonomous_rc_controller import AutonomousRCController
-from classes.depth_camera import DepthCamera
-import cv2
+from classes.autonomous_rc_controller import AutonomousRCController
+from flask import Flask, jsonify, request, render_template
+
 
 
 #### NOTES ####
@@ -27,31 +27,68 @@ import cv2
 
 # Constants
 STOP = False
-END_CORDS = (0, 0)
+INDEX_HTML_PATH = 'index.html'
+
+app = Flask(__name__, template_folder='../templates')
+
+# Initialize the RC Controller
+controller = AutonomousRCController(5) # this takes at least 60 seconds to initialize
+print("RC Controller Initialized.")
+
+@app.route('/')
+def index():
+    return render_template(INDEX_HTML_PATH)
+
+@app.route('/start', methods=['GET'])
+def start():
+    # Get the 'coords' query parameter as a comma-separated string (e.g., "x,y")
+    coords_string = request.args.get('coords', '')
+    
+    try:
+        # Attempt to split the string into parts and convert each to float (or int, as needed)
+        coords = tuple(float(coord.strip()) for coord in coords_string.split(','))
+        if len(coords) != 2:
+            raise ValueError
+        try:
+            controller.start(coords)
+            return jsonify({'message': f"RC car started with coordinates {coords}"}), 200
+        except Exception as e:
+            # Handle any errors from the controller method
+            return jsonify({'error': str(e)}), 500
+    except ValueError:
+        # Handle the case where conversion fails
+        return jsonify({'error': 'Invalid coordinates format. Please provide them in x,y format.'}), 400
+
+@app.route('/pause', methods=['GET'])
+def pause():
+    try:
+        controller.pause()
+        return jsonify({'message': 'RC car paused'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/resume', methods=['GET'])
+def resume():
+    try:
+        controller.resume()
+        return jsonify({'message': 'RC car resumed'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/shutdown', methods=['POST'])
+def shutdown():
+    try:
+        controller.shutdown()
+        global STOP
+        STOP = True
+        func = request.environ.get('werkzeug.server.shutdown')
+        if func is None:
+            raise RuntimeError('Not running with the Werkzeug Server')
+        func()
+        return jsonify({'message': 'RC car and server shutting down'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 
 if __name__ == "__main__":
-    # controller = AutonomousRCController()
-    # controller.start(END_CORDS)
-    # while True:
-    #     if STOP:
-    #         controller.stop()
-    #         break
-
-    #     pass
-    cam = DepthCamera()
-    print("Camera Initialized.")
-    color_image, depth_image, depth_colormap = cam.get_image_data()
-    print("Image Data Gathered.")
-    # Display the images
-    cv2.imshow('Color Image', color_image)
-    cv2.imshow('Depth Colormap', depth_colormap)  # Display the depth colormap for visualization
-
-    while True:
-        # wait for the user to press 'q' to quit
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-
-    cam.stop()  # Ensure to stop the camera after exiting the loop
-    cv2.destroyAllWindows()  # Close all OpenCV windows
-
-        
+    app.run(debug=True, host='0.0.0.0', port=5000)

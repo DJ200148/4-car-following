@@ -2,8 +2,8 @@ from threading import Thread, Event
 from time import sleep
 import numpy as np
 # Classes
-from classes.yolop_model import YolopModel
-from classes.control_system import ConstrolSystem
+# from classes.yolop_model import YolopModel
+# from classes.control_system import ConstrolSystem
 from classes.gps import GPS
 from classes.depth_camera import DepthCamera
 from classes.algo_detection_helper import AlgoDetectionHelper
@@ -17,13 +17,13 @@ from classes.google_maps import GoogleMaps
 
 
 class AutonomousRCController:
-    def __init__(self):
-        self.rc = ConstrolSystem()
-        self.yolop_model = YolopModel()
-        self.gps = GPS()
-        self.depth_camera = DepthCamera()
+    def __init__(self, init_delay=60):
+        # self.rc = ConstrolSystem()
+        # self.yolop_model = YolopModel()
+        # self.gps = GPS(port='/dev/ttyUSB0')
+        # self.depth_camera = DepthCamera()
         self.depth_detection = AlgoDetectionHelper()
-        self.google_maps = GoogleMaps()
+        # self.google_maps = GoogleMaps()
 
         # Init threads
         self.pause_event = Event()  # This event controls the pause state.
@@ -33,15 +33,15 @@ class AutonomousRCController:
         self.pause_event.set()
 
         # Init the start and end cords
-        self.start_cords = self.gps.get_coordinates()
-        self.end_cords
-        self.current_cords = self.start_cords
-        self.previous_cords = self.start_cords
-        self.path
-        self.directions
+        # self.start_cords = self.gps.get_coordinates()
+        # self.end_cords
+        # self.current_cords = self.start_cords
+        # self.previous_cords = self.start_cords
+        # self.path
+        # self.directions
         
         # wait for all components to be ready
-        sleep(60)
+        sleep(init_delay)
         
     def reset(self):
         # Init threads
@@ -52,22 +52,25 @@ class AutonomousRCController:
         self.pause_event.set()
 
         # Init the start and end cords
-        self.start_cords = self.gps.get_coordinates()
-        self.current_cords = self.start_cords
-        self.previous_cords = self.start_cords
+        # self.start_cords = self.gps.get_coordinates()
+        # self.current_cords = self.start_cords
+        # self.previous_cords = self.start_cords
         
 
     # Operations
     def start(self, end_cords):
-        self.end_cords = end_cords
-        self.directions = self.google_maps.get_directions(self.start_cords, self.end_cords)
-        self.path = self.google_maps.directions_to_path(self.directions)
+        # self.end_cords = end_cords
+        # self.directions = self.google_maps.get_directions(self.start_cords, self.end_cords)
+        # self.path = self.google_maps.directions_to_path(self.directions)
 
         # calibrate the position of the RC
         # self.calibrate_position()
 
         # start normal pipeline
         self.thread.start()
+
+    def stop(self):
+        self.stop_event.set()
 
     def pause(self):
         self.pause_event.clear()  # Clearing the event pauses the loop
@@ -81,8 +84,8 @@ class AutonomousRCController:
         self.thread.join()  # Wait for the thread to finish
         
         # Clean up
-        self.gps.stop()
-        self.depth_camera.stop()
+        # self.gps.stop()
+        # self.depth_camera.stop()
     
     # def calibrate_position(self):
     #     # JAMES: You can implement this method to a get the RC car to the correct position
@@ -97,20 +100,20 @@ class AutonomousRCController:
 
     def decide_action(self):
         # Gather data for the decision
-        color_image, depth_image, depth_colormap = self.depth_camera.get_image_data()
-        objects = self.yolop_model.detect(color_image)
+        # color_image, depth_image, depth_colormap = self.depth_camera.get_image_data()
+        # objects = self.yolop_model.detect(color_image)
         
-
         # Make a decision
-        if self.should_turn_left():
-            self.rc.turn_left()
-        elif self.should_turn_right():
-            self.rc.turn_right()
-        elif self.should_go_forward():
-            self.rc.turn_center()
-            self.rc.forward()
-        else:
-            self.rc.brake()
+        # if self.should_turn_left():
+        #     self.rc.turn_left()
+        # elif self.should_turn_right():
+        #     self.rc.turn_right()
+        # elif self.should_go_forward():
+        #     self.rc.turn_center()
+        #     self.rc.forward()
+        # else:
+        #     self.rc.brake()
+        pass
 
     def should_turn_left(self):
         pass

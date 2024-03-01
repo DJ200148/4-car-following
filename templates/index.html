@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>RC Controller</title>
+		<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <style>
+            :root {
+                --background-color-dark: #343a40;
+                --text-color-dark: #ffffff;
+                --background-color-light: #ffffff;
+                --text-color-light: #000000;
+            }
+            body.dark-mode {
+                background-color: var(--background-color-dark);
+                color: var(--text-color-dark);
+            }
+            body.light-mode {
+                background-color: var(--background-color-light);
+                color: var(--text-color-light);
+            }
+        </style>
+	</head>
+	<body class="dark-mode">
+		<div class="container">
+			<h1 class="mt-5">RC Car Controller</h1>
+			<div class="mb-3">
+				<button id="theme-toggle" class="btn btn-secondary">Toggle Dark/Light Mode</button>
+			</div>
+
+			<!-- Your existing HTML content -->
+			<div class="input-group mb-3 mt-3">
+				<input type="text" class="form-control" placeholder="Enter coordinates x,y" id="coords" />
+				<div class="input-group-append">
+					<button class="btn btn-outline-secondary" type="button" id="start-btn">Start</button>
+				</div>
+			</div>
+			<button class="btn btn-primary" id="pause-btn">Pause</button>
+			<button class="btn btn-success" id="resume-btn">Resume</button>
+			<button class="btn btn-danger" id="shutdown-btn">Shutdown</button>
+
+			<!-- Message Display Area -->
+			<div id="message-box" class="alert mt-3" style="display: none"></div>
+		</div>
+		<script>
+			$(document).ready(function () {
+				$("#start-btn").click(function () {
+					var coords = $("#coords").val();
+					$.get("/start?coords=" + coords, function (data) {
+						displayMessage("success", data.message);
+					}).fail(function (response) {
+						displayMessage("danger", response.responseJSON.error);
+					});
+				});
+				$("#pause-btn").click(function () {
+					$.get("/pause", function (data) {
+						console.log(data);
+						displayMessage("success", data.message);
+					}).fail(function (response) {
+						displayMessage("danger", response.responseJSON.error);
+					});
+				});
+				$("#resume-btn").click(function () {
+					$.get("/resume", function (data) {
+						displayMessage("success", data.message);
+					}).fail(function (response) {
+						displayMessage("danger", response.responseJSON.error);
+					});
+				});
+				$("#shutdown-btn").click(function () {
+					$.post("/shutdown", {}, function (data) {
+						displayMessage("success", data.message);
+					}).fail(function (response) {
+						displayMessage("danger", response.responseJSON.error);
+					});
+				});
+
+				$("#theme-toggle").click(function () {
+					$("body").toggleClass("dark-mode light-mode");
+				});
+
+				// Set the default theme to dark mode
+				if (!$("body").hasClass("dark-mode")) {
+					$("body").addClass("dark-mode");
+				}
+
+				function displayMessage(type, message) {
+					var messageBox = $("#message-box");
+					messageBox.removeClass("alert-success alert-danger");
+					messageBox.addClass("alert-" + type);
+					messageBox.text(message);
+					messageBox.show();
+				}
+			});
+		</script>
+	</body>
+</html>
