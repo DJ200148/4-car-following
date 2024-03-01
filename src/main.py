@@ -76,17 +76,17 @@ def resume():
         return jsonify({'error': str(e)}), 500
     
 @app.route('/reset', methods=['GET'])
-def resume():
+def reset():
     try:
         controller.reset()
         return jsonify({'message': 'RC car reset'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/shutdown', methods=['POST'])
-def shutdown():
+@app.route('/stop', methods=['POST'])
+def stop():
     try:
-        controller.shutdown()
+        controller.stop()
         global STOP
         STOP = True
         func = request.environ.get('werkzeug.server.shutdown')

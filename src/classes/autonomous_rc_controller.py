@@ -75,7 +75,7 @@ class AutonomousRCController:
     def resume(self):
         self.pause_event.set()  # Setting the event resumes the loop
 
-    def shutdown(self):
+    def stop(self):
         self.stop_event.set()  # Indicate that the run loop should stop
         self.resume()  # If it's paused, we need to resume it to allow exit
         self.thread.join()  # Wait for the thread to finish
