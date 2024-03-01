@@ -69,9 +69,6 @@ class AutonomousRCController:
         # start normal pipeline
         self.thread.start()
 
-    def stop(self):
-        self.stop_event.set()
-
     def pause(self):
         self.pause_event.clear()  # Clearing the event pauses the loop
 

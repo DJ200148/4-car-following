@@ -74,6 +74,14 @@ def resume():
         return jsonify({'message': 'RC car resumed'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+    
+@app.route('/reset', methods=['GET'])
+def resume():
+    try:
+        controller.reset()
+        return jsonify({'message': 'RC car reset'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/shutdown', methods=['POST'])
 def shutdown():

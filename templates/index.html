@@ -39,6 +39,7 @@
 			</div>
 			<button class="btn btn-primary" id="pause-btn">Pause</button>
 			<button class="btn btn-success" id="resume-btn">Resume</button>
+            <button class="btn btn-primary" id="reset-btn">Reset</button>
 			<button class="btn btn-danger" id="shutdown-btn">Shutdown</button>
 
 			<!-- Message Display Area -->
@@ -64,6 +65,13 @@
 				});
 				$("#resume-btn").click(function () {
 					$.get("/resume", function (data) {
+						displayMessage("success", data.message);
+					}).fail(function (response) {
+						displayMessage("danger", response.responseJSON.error);
+					});
+				});
+                $("#reset-btn").click(function () {
+					$.get("/reset", function (data) {
 						displayMessage("success", data.message);
 					}).fail(function (response) {
 						displayMessage("danger", response.responseJSON.error);
