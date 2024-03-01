@@ -1,0 +1,35 @@
+forward
+Exception in thread Thread-1:
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/threading.py", line 932, in _bootstrap_inner
+    self.run()
+  File "/usr/lib/python3.8/threading.py", line 870, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/syed/Desktop/repos/4-car-following/src/classes/autonomous_rc_controller.py", line 100, in run
+    self.decide_action()
+  File "/home/syed/Desktop/repos/4-car-following/src/classes/autonomous_rc_controller.py", line 113, in decide_action
+    self.rc.turn()
+  File "/home/syed/Desktop/repos/4-car-following/src/classes/control_system.py", line 49, in turn
+    self.kit.servo[SERVO_CHANNEL].angle = BASE_TURN_ANGLE + angle + self.offset
+  File "/home/syed/.local/lib/python3.8/site-packages/adafruit_motor/servo.py", line 130, in angle
+    self.fraction = new_angle / self.actuation_range
+  File "/home/syed/.local/lib/python3.8/site-packages/adafruit_motor/servo.py", line 69, in fraction
+    self._pwm_out.duty_cycle = duty_cycle
+  File "/home/syed/.local/lib/python3.8/site-packages/adafruit_pca9685.py", line 92, in duty_cycle
+    self._pca.pwm_regs[self._index] = (0, value)
+  File "/home/syed/.local/lib/python3.8/site-packages/adafruit_register/i2c_struct_array.py", line 58, in __setitem__
+    i2c.write(buf)
+  File "/home/syed/.local/lib/python3.8/site-packages/adafruit_bus_device/i2c_device.py", line 84, in write
+    self.i2c.writeto(self.device_address, buf, start=start, end=end)
+  File "/home/syed/.local/lib/python3.8/site-packages/busio.py", line 165, in writeto
+    return self._i2c.writeto(address, memoryview(buffer)[start:end], stop=stop)
+  File "/home/syed/.local/lib/python3.8/site-packages/adafruit_blinka/microcontroller/generic_linux/i2c.py", line 49, in writeto
+    self._i2c_bus.write_bytes(address, buffer[start:end])
+  File "/home/syed/.local/lib/python3.8/site-packages/Adafruit_PureIO/smbus.py", line 314, in write_bytes
+    self._device.write(buf)
+OSError: [Errno 121] Remote I/O error
+^CTraceback (most recent call last):
+  File "/home/syed/Desktop/repos/4-car-following/src/main.py", line 114, in <module>
+    pass
+KeyboardInterrupt
+Exiting... 

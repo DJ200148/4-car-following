@@ -4,8 +4,8 @@ import time
 con = ConstrolSystem(offset=5)
 # time.sleep(5)
 
-con.forward(60)
-time.sleep(2)
+# con.forward(60)
+# time.sleep(2)
 
 con.brake()
 # con.turn_center()
