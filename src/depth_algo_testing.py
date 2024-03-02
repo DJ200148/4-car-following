@@ -14,7 +14,7 @@ while True:
     cv2.imshow('Depth Colormap', depth_colormap)
     # cv2.imshow('Depth Image', depth_image)
     
-    direction = algo.get_turn_direction_from_depth_data(depth_image, threshold=700)
+    direction = algo.get_turn_direction_from_depth_data(depth_image, low_threshold=400, high_threshold=700)
 
     print(direction)
 
