@@ -18,13 +18,14 @@ from classes.google_maps import GoogleMaps
 
 
 class AutonomousRCController:
-    def __init__(self, init_delay=60, threshold=1000, offset=5):
-        self.threshold = threshold
+    def __init__(self, low_threshold=400, high_threshold=700, offset=7):
+        self.low_threshold = low_threshold
+        self.high_threshold = high_threshold
         
         self.rc = ConstrolSystem(offset)
         # self.yolop_model = YolopModel()
         # self.gps = GPS(port='/dev/ttyUSB0')
-        self.depth_camera = DepthCamera()
+        # self.depth_camera = DepthCamera()
         self.depth_detection = AlgoDetectionHelper()
         # self.google_maps = GoogleMaps()
 
@@ -42,10 +43,6 @@ class AutonomousRCController:
         # self.previous_cords = self.start_cords
         # self.path
         # self.directions
-        
-        # wait for all components to be ready
-        print("Sleeping on controller init.")
-        sleep(init_delay)
         
     def reset(self):
         # Init threads
@@ -94,19 +91,22 @@ class AutonomousRCController:
 
     # The main loop
     def run(self):
+        depth_camera = DepthCamera()
         try:
             while not self.stop_event.is_set():
                 self.pause_event.wait()  # Wait will block if the event is cleared, simulating a pause
-                self.decide_action()
-                # sleep(0.1)  # Adjust the sleep time as needed
-        except KeyboardInterrupt:
+                color_image, depth_image, depth_colormap = depth_camera.get_image_data()
+                # cv2.imshow('Depth Colormap', depth_colormap)
+                self.decide_action(depth_image)
+        except Exception as e:
+            print(e)
             self.rc.brake()
 
-    def decide_action(self):
+    def decide_action(self, depth_image):
         # Gather data for the decision
-        color_image, depth_image, depth_colormap = self.depth_camera.get_image_data()
-        cv2.imshow('Depth Colormap', depth_colormap)
-        direction = self.depth_detection.get_turn_direction_from_depth_data(depth_image, self.threshold)
+        # color_image, depth_image, depth_colormap = self.depth_camera.get_image_data()
+        # cv2.imshow('Depth Colormap', depth_colormap)
+        direction = self.depth_detection.get_turn_direction_from_depth_data(depth_image, low_threshold=self.low_threshold, high_threshold=self.high_threshold)
         print(direction)
         
         if direction == 'forward':

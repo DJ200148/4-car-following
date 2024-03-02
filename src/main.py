@@ -32,8 +32,8 @@ INDEX_HTML_PATH = 'index.html'
 app = Flask(__name__, template_folder='../templates')
 
 # Initialize the RC Controller
-controller = AutonomousRCController(init_delay=5, threshold=700, offset=5) # this takes at least 60 seconds to initialize
-print("RC Controller Initialized.")
+controller = AutonomousRCController(low_threshold=400, high_threshold=700, offset=7) # this takes at least 60 seconds to initialize
+print("RC Controller created, but will need to still wait for init to complete.")
 
 
 
@@ -104,12 +104,13 @@ def stop():
 
 
 def run_flask():
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, use_reloader=False, host='0.0.0.0', port=5000)
    
 
 if __name__ == "__main__":
-    controller.start((0,0))
-    
+    # controller.start((0,0))
+    run_flask()
+
     while not STOP:
         pass
     
