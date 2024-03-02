@@ -1,5 +1,5 @@
 from serial import Serial, SerialException
-
+import numpy as np
 class GPS:
     def __init__(self, port, baudrate=9600, timeout=1):
         """Initialize GPS connection with a timeout to avoid blocking."""
@@ -12,22 +12,25 @@ class GPS:
     def _parse_coordinates(self, data):
         """Parse raw NMEA sentence (GPRMC) for latitude and longitude."""
         # Check if valid data is available
-        if data[0] == '$GPRMC' and data[2] == 'A':  # Data[2]: 'A' for valid, 'V' for invalid
-            # Parse latitude
-            lat_nmea, lat_dir = data[3], data[4]
-            lat_deg = float(lat_nmea[:2]) + float(lat_nmea[2:]) / 60
-            if lat_dir == 'S':
-                lat_deg *= -1
+        try:
+            if data[0] == '$GPRMC' and data[2] == 'A':  # Data[2]: 'A' for valid, 'V' for invalid
+                # Parse latitude
+                lat_nmea, lat_dir = data[3], data[4]
+                lat_deg = float(lat_nmea[:2]) + float(lat_nmea[2:]) / 60
+                if lat_dir == 'S':
+                    lat_deg *= -1
 
-            # Parse longitude
-            lon_nmea, lon_dir = data[5], data[6]
-            lon_deg = float(lon_nmea[:3]) + float(lon_nmea[3:]) / 60
-            if lon_dir == 'W':
-                lon_deg *= -1
+                # Parse longitude
+                lon_nmea, lon_dir = data[5], data[6]
+                lon_deg = float(lon_nmea[:3]) + float(lon_nmea[3:]) / 60
+                if lon_dir == 'W':
+                    lon_deg *= -1
 
-            return (lat_deg, lon_deg)
+                return (lat_deg, lon_deg)
 
-        return None
+            return None
+        except Exception as error:
+            print("problem with parse_coordinates:\n", error)    
 
     def update(self):
         """Read GPS data and update coordinates."""

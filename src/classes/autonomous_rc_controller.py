@@ -43,6 +43,11 @@ class AutonomousRCController:
         # self.previous_cords = self.start_cords
         # self.path
         # self.directions
+        # self.current_orientation
+        # self.desired_orientation
+        # wait for all components to be ready
+        print("Sleeping on controller init.")
+        sleep(init_delay)
         
     def reset(self):
         # Init threads
@@ -56,6 +61,8 @@ class AutonomousRCController:
         # self.start_cords = self.gps.get_coordinates()
         # self.current_cords = self.start_cords
         # self.previous_cords = self.start_cords
+        # self.current_orientation = self.current_orientation
+        # self.desired_orientation = self.desired_orientation
         
 
     # Operations
@@ -87,6 +94,17 @@ class AutonomousRCController:
     
     # def calibrate_position(self):
     #     # JAMES: You can implement this method to a get the RC car to the correct position
+        #
+        # self.current_orientation = get_orientation(self.previous_coords, self.current_cords)
+        # self.desired_orientation = get_orientation(self.current_coords, self.path[0])
+        # angle = (self.desired_orientation - self.current_orientation) % 360
+        # angle = (angle-180)%360 +180 
+        #if(angle < 0)
+        # should turn left
+        #elif(angle > 0)
+        # should turn right
+        #else
+        #should go straight
     #     pass
 
     # The main loop
