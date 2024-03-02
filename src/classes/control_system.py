@@ -21,14 +21,13 @@ SERVO_CHANNEL = 0
 THROTTLE_CHANNEL = 1
 
 class ConstrolSystem:
-    def __init__(self, offset, shutdown_pin='466'):
+    def __init__(self, offset=7, shutdown_pin='466'):
         # Postive offset goes right
         self.offset = offset
         self.shutdown_pin = shutdown_pin
         print("Initializing Control System")
-        self.set_export_gpio()
-        self.set_direction_gpio()
-        self.set_gpio_value(0)
+        self.enable_controls()
+        
         print("Shutdown pin enabled")
         i2c_bus = busio.I2C(board.SCL, board.SDA)
         print("Initializing Servo Kit")

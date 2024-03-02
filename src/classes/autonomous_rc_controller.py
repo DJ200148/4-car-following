@@ -2,30 +2,26 @@ from threading import Thread, Event
 from time import sleep
 import numpy as np
 import cv2
+
 # Classes
 # from classes.yolop_model import YolopModel
-from classes.control_system import ConstrolSystem
+# from classes.control_system import ConstrolSystem
 from classes.gps import GPS
 from classes.depth_camera import DepthCamera
 from classes.algo_detection_helper import AlgoDetectionHelper
 from classes.google_maps import GoogleMaps
 
-# Use Cases:
-# 1. The RC should turn left
-# 2. The RC should turn right
-# 3. The RC should go forward
-# 4. The RC should be able to detect if it needs to turn around 
-
 
 class AutonomousRCController:
-    def __init__(self, low_threshold=400, high_threshold=700, offset=7):
+    def __init__(self, test_mode=False, low_threshold=400, high_threshold=700, offset=7):
+        self.test_mode = test_mode
         self.low_threshold = low_threshold
         self.high_threshold = high_threshold
         
-        self.rc = ConstrolSystem(offset)
+        # self.rc = ConstrolSystem(offset)
         # self.yolop_model = YolopModel()
         # self.gps = GPS(port='/dev/ttyUSB0')
-        # self.depth_camera = DepthCamera()
+        self.depth_camera = DepthCamera()
         self.depth_detection = AlgoDetectionHelper()
         # self.google_maps = GoogleMaps()
 
@@ -46,8 +42,6 @@ class AutonomousRCController:
         # self.current_orientation
         # self.desired_orientation
         # wait for all components to be ready
-        print("Sleeping on controller init.")
-        sleep(init_delay)
         
     def reset(self):
         # Init threads
@@ -55,7 +49,7 @@ class AutonomousRCController:
         self.stop_event = Event()  # This event controls the stop state to safely exit the loop.
         self.thread = Thread(target=self.run)  # Thread running the run method
         # Set the event at the start so the loop runs
-        self.pause_evedepth_imagent.set()
+        self.pause_event.set()
 
         # Init the start and end cords
         # self.start_cords = self.gps.get_coordinates()
@@ -109,35 +103,35 @@ class AutonomousRCController:
 
     # The main loop
     def run(self):
-        depth_camera = DepthCamera()
+        # depth_camera = DepthCamera()
         try:
             while not self.stop_event.is_set():
                 self.pause_event.wait()  # Wait will block if the event is cleared, simulating a pause
-                color_image, depth_image, depth_colormap = depth_camera.get_image_data()
-                # cv2.imshow('Depth Colormap', depth_colormap)
+                color_image, depth_image, depth_colormap = self.depth_camera.get_image_data()
+                if self.test_mode: cv2.imshow('Depth Colormap', depth_colormap)
                 self.decide_action(depth_image)
         except Exception as e:
             print(e)
-            self.rc.brake()
+            # self.rc.brake()
 
     def decide_action(self, depth_image):
         # Gather data for the decision
         # color_image, depth_image, depth_colormap = self.depth_camera.get_image_data()
         # cv2.imshow('Depth Colormap', depth_colormap)
         direction = self.depth_detection.get_turn_direction_from_depth_data(depth_image, low_threshold=self.low_threshold, high_threshold=self.high_threshold)
-        print(direction)
+        if self.test_mode: print(direction)
         
-        if direction == 'forward':
-            self.rc.turn()
-            self.rc.forward(60)
-        elif direction == 'right':
-            self.rc.turn(35)
-            self.rc.forward(60)
-        elif direction == 'left':
-            self.rc.turn(-35)
-            self.rc.forward(60)
-        else:
-            self.rc.brake()
+        # if direction == 'forward':
+        #     self.rc.turn()
+        #     self.rc.forward(60)
+        # elif direction == 'right':
+        #     self.rc.turn(35)
+        #     self.rc.forward(60)
+        # elif direction == 'left':
+        #     self.rc.turn(-35)
+        #     self.rc.forward(60)
+        # else:
+        #     self.rc.brake()
 
         # Make a decision
         # if self.should_turn_left():
@@ -151,14 +145,14 @@ class AutonomousRCController:
         #     self.rc.brake()
         pass
 
-    def should_turn_left(self):
-        pass
+    # def should_turn_left(self):
+    #     pass
 
-    def should_turn_right(self):
-        pass
+    # def should_turn_right(self):
+    #     pass
 
-    def should_go_forward(self):
-        pass
+    # def should_go_forward(self):
+    #     pass
 
     # def should_reverse(self):
     #     pass
