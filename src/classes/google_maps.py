@@ -33,4 +33,4 @@ class GoogleMaps:
     def directions_to_path(self, directions): 
         '''This method will return the path from the directions. queue of (Lat,Long)'''
         self.Direction_queue = deque(directions)
-            
+        return self.Direction_queue
