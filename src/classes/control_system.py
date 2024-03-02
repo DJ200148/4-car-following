@@ -52,7 +52,7 @@ class ConstrolSystem:
     
     def shutdown(self):
         # Set the GPIO mode to BOARD mode (pin numbering)
-        GPIO.setmode(GPIO.BOARD)
+        # GPIO.setmode(GPIO.BOARD)
 
         # Set up the GPIO pin as an output
         GPIO.setup(self.shutdown_pin, GPIO.OUT)
