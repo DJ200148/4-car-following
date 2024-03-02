@@ -1,7 +1,7 @@
 from adafruit_servokit import ServoKit
 import board
 import busio
-import Jetson.GPIO as GPIO
+import subprocess
 
 # Servo Throttle Speeds
 MAX_THROTTLE = 60
@@ -21,11 +21,15 @@ SERVO_CHANNEL = 0
 THROTTLE_CHANNEL = 1
 
 class ConstrolSystem:
-    def __init__(self, offset, shutdown_pin=32):
+    def __init__(self, offset, shutdown_pin='466'):
         # Postive offset goes right
         self.offset = offset
         self.shutdown_pin = shutdown_pin
         print("Initializing Control System")
+        self.set_export_gpio()
+        self.set_direction_gpio()
+        self.set_gpio_value(0)
+        print("Shutdown pin enabled")
         i2c_bus = busio.I2C(board.SCL, board.SDA)
         print("Initializing Servo Kit")
         self.kit = ServoKit(channels=16, address=0x40, i2c=i2c_bus)
@@ -50,15 +54,22 @@ class ConstrolSystem:
         angle = max(MIN_TURN_ANGLE, min(MAX_TURN_ANGLE, angle))
         self.kit.servo[SERVO_CHANNEL].angle = BASE_TURN_ANGLE + angle + self.offset
     
-    def shutdown(self):
-        # Set the GPIO mode to BOARD mode (pin numbering)
-        # GPIO.setmode(GPIO.BOARD)
+    def disable_controls(self):
+        self.set_gpio_value(1)
 
-        # Set up the GPIO pin as an output
-        GPIO.setup(self.shutdown_pin, GPIO.OUT)
-
-        # Set the GPIO pin to high (1)
-        GPIO.output(self.shutdown_pin, GPIO.HIGH)
-
-        # Clean up the GPIO settings
-        GPIO.cleanup()
+    def enable_controls(self):
+        self.set_export_gpio()
+        self.set_direction_gpio()
+        self.set_gpio_value(0)
+    
+    def set_export_gpio(self):
+        # Export the GPIO pin
+        subprocess.run(['echo', str(self.shutdown_pin), '>', '/sys/class/gpio/export'])
+    
+    def set_direction_gpio(self, direction='out'):
+        # Set the direction of the GPIO pin to "out"
+        subprocess.run(['echo', str(direction), '>', f'/sys/class/gpio/gpio{self.shutdown_pin}/direction'])
+    
+    def set_gpio_value(self, value):
+        # Set the value of the GPIO pin
+        subprocess.run(['echo', str(value), '>', f'/sys/class/gpio/gpio{self.shutdown_pin}/value'])

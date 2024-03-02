@@ -10,7 +10,7 @@ try:
     print("slept")
     con.turn(-35)
     print("turned left")
-    con.shutdown()
+    con.disable_controls()
     print("Stopped")
     time.sleep(1)
     con.turn()
