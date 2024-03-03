@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request, render_template
 from classes.autonomous_rc_controller import AutonomousRCController
 
 
-def create_app(controller: AutonomousRCController, index_page_path, template_folder='../templates', shared_state=None):
+def create_app(controller: AutonomousRCController, index_page_path, template_folder='/templates', shared_state=None):
     app = Flask(__name__, template_folder=template_folder)
     
     # Flask endpoints

@@ -40,7 +40,7 @@ print("RC Controller created, but will need to still wait for init to complete."
 
 # Initialize the Flask app
 INDEX_HTML_PATH = 'index.html'
-app = create_app(controller, INDEX_HTML_PATH, shared_state=shared_state)
+app = create_app(controller, INDEX_HTML_PATH, template_folder='../../templates', shared_state=shared_state)
 
 def run_flask():
     app.run(debug=True, use_reloader=False, host='0.0.0.0', port=5000)
