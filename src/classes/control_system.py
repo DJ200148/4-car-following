@@ -56,32 +56,34 @@ class ConstrolSystem:
         self.set_direction_gpio()
         self.set_gpio_value(0)
     
+    def run_command(self, command):
+        try:
+            subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            print(f"Command executed successfully: {command}")
+        except subprocess.CalledProcessError as e:
+            print(f"Command failed: {command}\nError: {e}")
+
+    def wait_for_gpio_ready(self, gpio_path, timeout=5):
+        start_time = time.time()
+        while not os.path.exists(gpio_path):
+            time.sleep(0.1)  # Wait for 100ms
+            if time.time() - start_time > timeout:
+                raise TimeoutError(f"GPIO path {gpio_path} did not become available within {timeout} seconds.")
+
     def set_export_gpio(self, gpio_pin):
-        # Export the GPIO pin
         gpio_path = f'/sys/class/gpio/gpio{gpio_pin}'
-    
-        # Check if the GPIO pin is already exported
+
         if not os.path.exists(gpio_path):
-            try:
-                # Attempt to export the GPIO pin
-                subprocess.run(['echo', str(gpio_pin), '>', '/sys/class/gpio/export'], shell=True, check=True)
-                print(f"GPIO {gpio_pin} exported successfully.")
-                time.sleep(1)
-            except subprocess.CalledProcessError as e:
-                print(f"Failed to export GPIO {gpio_pin}: {e}")
+            self.run_command(f'echo {gpio_pin} > /sys/class/gpio/export')
+            self.wait_for_gpio_ready(gpio_path)
         else:
             print(f"GPIO {gpio_pin} is already exported.")
 
     def set_direction_gpio(self, direction='out'):
-        # Set the direction of the GPIO pin to "out"
-        try:
-            subprocess.run(['echo', {direction}, '>', f'/sys/class/gpio/gpio{self.shutdown_pin}/direction'], shell=True, check=True)
-        except subprocess.CalledProcessError as e:
-                print(f"Failed set direction {direction}: {e}")
-    
+        direction_path = f'/sys/class/gpio/gpio{self.shutdown_pin}/direction'
+        self.run_command(f'echo {direction} > {direction_path}')
+        self.wait_for_gpio_ready(direction_path)
+
     def set_gpio_value(self, value):
-        # Set the value of the GPIO pin
-        try:
-            self.run_command(f'echo {value} > /sys/class/gpio/gpio{self.shutdown_pin}/value')
-        except subprocess.CalledProcessError as e:
-                print(f"Failed to set value {value}: {e}")
+        value_path = f'/sys/class/gpio/gpio{self.shutdown_pin}/value'
+        self.run_command(f'echo {value} > {value_path}')
