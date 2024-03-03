@@ -1,5 +1,5 @@
 from adafruit_servokit import ServoKit
-import board, busio, subprocess, os
+import board, busio, subprocess, os, time
 
 # Servo Throttle Speeds
 MAX_THROTTLE = 60
@@ -69,6 +69,7 @@ class ConstrolSystem:
                 # Attempt to export the GPIO pin
                 subprocess.run(['echo', str(gpio_pin), '>', '/sys/class/gpio/export'], shell=True, check=True)
                 print(f"GPIO {gpio_pin} exported successfully.")
+                time.sleep(1)
             except subprocess.CalledProcessError as e:
                 print(f"Failed to export GPIO {gpio_pin}: {e}")
         else:
