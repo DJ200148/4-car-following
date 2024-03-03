@@ -31,6 +31,7 @@ required_libraries = [
     "approxeng.input", # adafruit lib ==2.6.3
     "PyYAML==6.0", # required library for approxeng
     "pathfinding", # pathfinding
+    "matplotlib", # Plot lib
 ]
 
 failed_libraries = []

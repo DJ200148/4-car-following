@@ -54,8 +54,8 @@ def create_app(controller: AutonomousRCController, index_page_path, template_fol
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
-    @app.route('/stop', methods=['POST'])
-    def stop():
+    @app.route('/shutdown', methods=['POST'])
+    def shutdown():
         try:
             controller.stop()
             if shared_state is not None:

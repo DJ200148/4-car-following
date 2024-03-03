@@ -17,8 +17,9 @@ class AutonomousRCController:
         self.test_mode = test_mode
         self.low_threshold = low_threshold
         self.high_threshold = high_threshold
+        self.offset = offset
         
-        self.rc = ConstrolSystem(offset)
+        self.rc = ConstrolSystem(self.offset)
         # self.yolop_model = YolopModel()
         # self.gps = GPS(port='/dev/ttyUSB0')
         self.depth_camera = DepthCamera()
@@ -41,10 +42,13 @@ class AutonomousRCController:
         # self.current_orientation
         # self.desired_orientation
         # wait for all components to be ready
-        
+    
     def reset(self):
+        self.stop() # Stop the system
         # reset rc
-        self.rc.enable_controls()
+        self.rc = ConstrolSystem(self.offset)
+        self.depth_camera = DepthCamera()
+
         # Init threads
         self.pause_event = Event()  # This event controls the pause state.
         self.stop_event = Event()  # This event controls the stop state to safely exit the loop.
@@ -73,9 +77,11 @@ class AutonomousRCController:
         self.thread.start()
 
     def pause(self):
+        self.rc.disable_controls()
         self.pause_event.clear()  # Clearing the event pauses the loop
 
     def resume(self):
+        self.rc.enable_controls()
         self.pause_event.set()  # Setting the event resumes the loop
 
     def stop(self):
@@ -86,22 +92,7 @@ class AutonomousRCController:
         
         # Clean up
         # self.gps.stop()
-        # self.depth_camera.stop()
-    
-    # def calibrate_position(self):
-    #     # JAMES: You can implement this method to a get the RC car to the correct position
-        #
-        # self.current_orientation = get_orientation(self.previous_coords, self.current_cords)
-        # self.desired_orientation = get_orientation(self.current_coords, self.path[0])
-        # angle = (self.desired_orientation - self.current_orientation) % 360
-        # angle = (angle-180)%360 +180 
-        #if(angle < 0)
-        # should turn left
-        #elif(angle > 0)
-        # should turn right
-        #else
-        #should go straight
-    #     pass
+        self.depth_camera.stop()
 
     # The main loop
     def run(self):
@@ -140,3 +131,18 @@ class AutonomousRCController:
         new_origin_coor = (compared_coor[0] - coor[0],compared_coor[1]-coor[1])
         orientation = np.mod(np.degrees(np.arctan2(new_origin_coor[1],new_origin_coor[0])),360)
         return orientation
+
+# def calibrate_position(self):
+    #     # JAMES: You can implement this method to a get the RC car to the correct position
+        #
+        # self.current_orientation = get_orientation(self.previous_coords, self.current_cords)
+        # self.desired_orientation = get_orientation(self.current_coords, self.path[0])
+        # angle = (self.desired_orientation - self.current_orientation) % 360
+        # angle = (angle-180)%360 +180 
+        #if(angle < 0)
+        # should turn left
+        #elif(angle > 0)
+        # should turn right
+        #else
+        #should go straight
+    #     pass

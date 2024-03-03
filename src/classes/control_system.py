@@ -2,7 +2,7 @@ from adafruit_servokit import ServoKit
 import board, busio, subprocess, os, time
 
 # Servo Throttle Speeds
-MAX_THROTTLE = 60
+MAX_THROTTLE = 90
 MIN_THROTTLE = 0
 BASE_THROTTLE = 30
 

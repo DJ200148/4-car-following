@@ -4,28 +4,34 @@ import time
 con = ConstrolSystem(offset=7)
 
 try:
-    con.turn(-35)
-    print("turned left")
-    time.sleep(2)
-
     con.disable_controls()
     print("Stopped")
     time.sleep(2)
-    
-    con.turn()
-    print("tried to go centered")
-    time.sleep(2)
 
-    con.enable_controls()
-    print("Enabled")
+    con.forward(90)
+    print("Full Throttle")
+    time.sleep(2)
+    con.brake()
+    print("Break")
+    # con.turn(-35)
+    # print("turned left")
     # time.sleep(2)
 
-    con.turn(35)
-    print("turned right")
-    time.sleep(2)
     
-    con.turn()
-    print("centered")
+    # con.turn()
+    # print("tried to go centered")
+    # time.sleep(2)
+
+    # con.enable_controls()
+    # print("Enabled")
+    # # time.sleep(2)
+
+    # con.turn(35)
+    # print("turned right")
+    # time.sleep(2)
+    
+    # con.turn()
+    # print("centered")
 
 except Exception as e:
     print(e)
