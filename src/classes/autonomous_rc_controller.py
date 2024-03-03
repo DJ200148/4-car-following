@@ -1,14 +1,13 @@
 from threading import Thread, Event
 from time import sleep
 import numpy as np
-import cv2
 
 # Classes
 # from classes.yolop_model import YolopModel
-# from classes.control_system import ConstrolSystem
+from classes.control_system import ConstrolSystem
 from classes.gps import GPS
 from classes.depth_camera import DepthCamera
-from classes.algo_detection_helper import AlgoDetectionHelper
+from classes.helpers import get_turn_direction_from_depth_data, display_depth_colormap
 from classes.google_maps import GoogleMaps
 
 
@@ -18,11 +17,10 @@ class AutonomousRCController:
         self.low_threshold = low_threshold
         self.high_threshold = high_threshold
         
-        # self.rc = ConstrolSystem(offset)
+        self.rc = ConstrolSystem(offset)
         # self.yolop_model = YolopModel()
         # self.gps = GPS(port='/dev/ttyUSB0')
         self.depth_camera = DepthCamera()
-        self.depth_detection = AlgoDetectionHelper()
         # self.google_maps = GoogleMaps()
 
         # Init threads
@@ -108,7 +106,7 @@ class AutonomousRCController:
             while not self.stop_event.is_set():
                 self.pause_event.wait()  # Wait will block if the event is cleared, simulating a pause
                 color_image, depth_image, depth_colormap = self.depth_camera.get_image_data()
-                if self.test_mode: cv2.imshow('Depth Colormap', depth_colormap)
+                if self.test_mode: display_depth_colormap(depth_colormap)
                 self.decide_action(depth_image)
         except Exception as e:
             print(e)
@@ -118,7 +116,7 @@ class AutonomousRCController:
         # Gather data for the decision
         # color_image, depth_image, depth_colormap = self.depth_camera.get_image_data()
         # cv2.imshow('Depth Colormap', depth_colormap)
-        direction = self.depth_detection.get_turn_direction_from_depth_data(depth_image, low_threshold=self.low_threshold, high_threshold=self.high_threshold)
+        direction = get_turn_direction_from_depth_data(depth_image, low_threshold=self.low_threshold, high_threshold=self.high_threshold)
         if self.test_mode: print(direction)
         
         # if direction == 'forward':
