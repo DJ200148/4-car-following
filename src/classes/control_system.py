@@ -81,9 +81,10 @@ class ConstrolSystem:
 
     def set_direction_gpio(self, direction='out'):
         direction_path = f'/sys/class/gpio/gpio{self.shutdown_pin}/direction'
-        self.run_command(f'echo {direction} > {direction_path}')
         self.wait_for_gpio_ready(direction_path)
+        self.run_command(f'echo {direction} > {direction_path}')
 
     def set_gpio_value(self, value):
         value_path = f'/sys/class/gpio/gpio{self.shutdown_pin}/value'
+        self.wait_for_gpio_ready(value_path)
         self.run_command(f'echo {value} > {value_path}')
