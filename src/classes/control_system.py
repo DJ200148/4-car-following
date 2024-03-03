@@ -23,12 +23,11 @@ THROTTLE_CHANNEL = 1
 class ConstrolSystem:
     def __init__(self, offset=7, shutdown_pin='466'):
         # Postive offset goes right
+        print("Initializing Control System")
         self.offset = offset
         self.shutdown_pin = shutdown_pin
-        print("Initializing Control System")
+        print("Initializing Shutdown Pin")
         self.enable_controls()
-        
-        print("Shutdown pin enabled")
         i2c_bus = busio.I2C(board.SCL, board.SDA)
         print("Initializing Servo Kit")
         self.kit = ServoKit(channels=16, address=0x40, i2c=i2c_bus)

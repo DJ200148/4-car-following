@@ -4,17 +4,27 @@ import time
 con = ConstrolSystem(offset=7)
 
 try:
-    con.turn()
-    print("center")
-    time.sleep(1)
-    print("slept")
     con.turn(-35)
     print("turned left")
+    
     con.disable_controls()
     print("Stopped")
     time.sleep(1)
+    
     con.turn()
     print("centered")
+    time.sleep(1)
+    
+    con.turn(35)
+    print("turned right")
+
+    con.enable_controls()
+    print("Enabled")
+    time.sleep(1)
+
+    con.turn()
+    print("centered")
+
 except Exception as e:
     print(e)
     # print("Sleeping")
