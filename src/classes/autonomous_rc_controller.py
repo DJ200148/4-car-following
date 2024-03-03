@@ -42,6 +42,8 @@ class AutonomousRCController:
         # wait for all components to be ready
         
     def reset(self):
+        # reset rc
+        self.rc.enable_controls()
         # Init threads
         self.pause_event = Event()  # This event controls the pause state.
         self.stop_event = Event()  # This event controls the stop state to safely exit the loop.
@@ -76,6 +78,7 @@ class AutonomousRCController:
         self.pause_event.set()  # Setting the event resumes the loop
 
     def stop(self):
+        self.rc.disable_controls()
         self.stop_event.set()  # Indicate that the run loop should stop
         self.resume()  # If it's paused, we need to resume it to allow exit
         self.thread.join()  # Wait for the thread to finish
