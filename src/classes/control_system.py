@@ -1,7 +1,5 @@
 from adafruit_servokit import ServoKit
-import board
-import busio
-import subprocess
+import board, busio, subprocess, os
 
 # Servo Throttle Speeds
 MAX_THROTTLE = 60
@@ -13,8 +11,6 @@ MAX_TURN_ANGLE = 90
 CENTER_TURN_ANGLE = 0
 MIN_TURN_ANGLE = -90
 BASE_TURN_ANGLE = 90
-
-
 
 # Servo Channels
 SERVO_CHANNEL = 0
@@ -56,16 +52,27 @@ class ConstrolSystem:
         self.set_gpio_value(1)
 
     def enable_controls(self):
-        self.set_export_gpio()
+        self.set_export_gpio(self.shutdown_pin)
         self.set_direction_gpio()
         self.set_gpio_value(0)
     
     def run_command(self, command):
         subprocess.run(command, shell=True, check=True)
 
-    def set_export_gpio(self):
+    def set_export_gpio(self, gpio_pin):
         # Export the GPIO pin
-        self.run_command(f'echo {self.shutdown_pin} > /sys/class/gpio/export')
+        gpio_path = f'/sys/class/gpio/gpio{gpio_pin}'
+    
+        # Check if the GPIO pin is already exported
+        if not os.path.exists(gpio_path):
+            try:
+                # Attempt to export the GPIO pin
+                subprocess.run(['echo', str(gpio_pin), '>', '/sys/class/gpio/export'], shell=True, check=True)
+                print(f"GPIO {gpio_pin} exported successfully.")
+            except subprocess.CalledProcessError as e:
+                print(f"Failed to export GPIO {gpio_pin}: {e}")
+        else:
+            print(f"GPIO {gpio_pin} is already exported.")
 
     def set_direction_gpio(self, direction='out'):
         # Set the direction of the GPIO pin to "out"
