@@ -46,6 +46,12 @@
 
 			<!-- Message Display Area -->
 			<div id="message-box" class="alert mt-3" style="display: none"></div>
+
+			<div>
+				<h2>Camera Stream</h2>
+    			<button id="toggleButton" onclick="toggleStream()">Start Stream</button>
+    			<img id="stream" src="">
+			</div>
 		</div>
 		<script>
 			$(document).ready(function () {
@@ -104,6 +110,20 @@
 					messageBox.show();
 				}
 			});
+			function toggleStream() {
+				var img = document.getElementById('stream');
+				var btn = document.getElementById('toggleButton');
+
+				if (img.src === '') {
+					// Start the stream
+					img.src = "/video_feed";
+					btn.textContent = 'Stop Stream';
+				} else {
+					// Stop the stream by clearing the src attribute
+					img.src = '';
+					btn.textContent = 'Start Stream';
+				}
+			}
 		</script>
 	</body>
 </html>

@@ -18,6 +18,7 @@ class AutonomousRCController:
         self.low_threshold = low_threshold
         self.high_threshold = high_threshold
         self.offset = offset
+        self.status = "ready"
         
         self.rc = ConstrolSystem(self.offset)
         # self.yolop_model = YolopModel()
@@ -62,6 +63,7 @@ class AutonomousRCController:
         # self.previous_cords = self.start_cords
         # self.current_orientation = self.current_orientation
         # self.desired_orientation = self.desired_orientation
+        self.status = "ready"
         
 
     # Operations
@@ -75,14 +77,17 @@ class AutonomousRCController:
 
         # start normal pipeline
         self.thread.start()
+        self.status = "running"
 
     def pause(self):
         self.rc.disable_controls()
         self.pause_event.clear()  # Clearing the event pauses the loop
+        self.status = "paused"
 
     def resume(self):
         self.rc.enable_controls()
         self.pause_event.set()  # Setting the event resumes the loop
+        self.status = "running"
 
     def stop(self):
         self.rc.disable_controls()
@@ -93,6 +98,7 @@ class AutonomousRCController:
         # Clean up
         # self.gps.stop()
         self.depth_camera.stop()
+        self.status = "stopped"
 
     # The main loop
     def run(self):
@@ -100,8 +106,13 @@ class AutonomousRCController:
             while not self.stop_event.is_set():
                 self.pause_event.wait()  # Wait will block if the event is cleared, simulating a pause
                 color_image, depth_image, depth_colormap = self.depth_camera.get_image_data()
-                if self.test_mode: display_depth_colormap(depth_colormap)
-                self.decide_action(depth_image)
+                if depth_image is not None:
+                    if self.test_mode: 
+                        display_depth_colormap(depth_colormap)
+                    self.decide_action(depth_image)
+                else:
+                    # Handle frame retrieval failure
+                    pass
         except Exception as e:
             print(f"An error occurred: {e}")
             traceback.print_exc()  # This prints the traceback details

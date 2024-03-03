@@ -35,6 +35,16 @@ class DepthCamera:
         # Return the color image, raw depth image, and depth colormap
         return color_image, depth_image, depth_colormap
     
+    def get_jpeg_frame(self):
+        # Get the color image from the camera
+        color_image, _, _ = self.get_image_data()
+        
+        # Convert the color image to a JPEG frame
+        ret, jpeg_frame = cv2.imencode('.jpg', color_image)
+        
+        # Return the JPEG frame
+        return jpeg_frame.tobytes()
+
     def stop(self):
         # Stop the camera pipeline
         self.pipeline.stop()

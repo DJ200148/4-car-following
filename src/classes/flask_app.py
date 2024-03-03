@@ -1,5 +1,6 @@
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, Response
 from classes.autonomous_rc_controller import AutonomousRCController
+import time
 
 
 def create_app(controller: AutonomousRCController, index_page_path, template_folder='/templates', shared_state=None):
@@ -64,4 +65,22 @@ def create_app(controller: AutonomousRCController, index_page_path, template_fol
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
+    @app.route('/status', methods=['GET'])
+    def status():
+        return jsonify({'message': f'RC car status: {controller.status}'})
+    
+    def generate_camera_stream():
+        while True:
+            frame = controller.depth_camera.get_jpeg_frame()
+            if frame:
+                yield (b'--frame\r\n'
+                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+            else:
+                # Handle error or no frame scenario
+                time.sleep(0.1)  # Prevent tight loop if there's an error
+
+    @app.route('/video_feed')
+    def video_feed():
+        """Route to stream video from the camera."""
+        return Response(generate_camera_stream(), mimetype='multipart/x-mixed-replace; boundary=frame')
     return app
