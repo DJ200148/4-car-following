@@ -29,7 +29,7 @@ from classes.flask_app import create_app
 shared_state = {'STOP': False}
 
 # Controller calibrations
-TEST_MODE = True
+TEST_MODE = False
 LOW_THRESHOLD = 400
 HIGH_THRESHOLD = 700
 OFFSET = 7

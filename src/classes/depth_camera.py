@@ -1,6 +1,7 @@
 import pyrealsense2 as rs
 import numpy as np
 import cv2
+from classes.helpers import add_lines_to_image
 
 class DepthCamera:
     def __init__(self, depth_width=640, depth_height=480, depth_fps=30, color_width=640, color_height=480, color_fps=30):
@@ -35,12 +36,24 @@ class DepthCamera:
         # Return the color image, raw depth image, and depth colormap
         return color_image, depth_image, depth_colormap
     
-    def get_jpeg_frame(self):
+    def get_jpeg_color_image_frame(self, lines=False):
         # Get the color image from the camera
         color_image, _, _ = self.get_image_data()
-        
+        if lines:
+            color_image = add_lines_to_image(color_image)
         # Convert the color image to a JPEG frame
         ret, jpeg_frame = cv2.imencode('.jpg', color_image)
+        
+        # Return the JPEG frame
+        return jpeg_frame.tobytes()
+
+    def get_jpeg_depth_colormap_frame(self, lines=False):
+        # Get the color image from the camera
+        _, _, depth_colormap = self.get_image_data()
+        if lines:
+            depth_colormap = add_lines_to_image(depth_colormap)
+        # Convert the color image to a JPEG frame
+        ret, jpeg_frame = cv2.imencode('.jpg', depth_colormap)
         
         # Return the JPEG frame
         return jpeg_frame.tobytes()

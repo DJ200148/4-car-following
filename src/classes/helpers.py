@@ -58,57 +58,18 @@ def get_turn_direction_from_depth_data(depth_image, low_threshold=500, high_thre
         return 'forward'  # Path is clear
 
 
-# def display_depth_colormap(depth_colormap):
-#     # Calculate positions for vertical lines at 1/3rd and 2/3rd of the width
-#     height, width = depth_colormap.shape[:2]
-#     one_third = int(width / 3)
-#     two_third = int(width * 2 / 3)
-    
-#     # Calculate position for horizontal line at 3/4th of the height
-#     three_quarter_height = int(height * 3 / 4)
-    
-#     # Draw vertical lines
-#     cv2.line(depth_colormap, (one_third, 0), (one_third, height), (255, 0, 0), 2)
-#     cv2.line(depth_colormap, (two_third, 0), (two_third, height), (255, 0, 0), 2)
-    
-#     # Draw horizontal line at the bottom 1/4th
-#     cv2.line(depth_colormap, (0, three_quarter_height), (width, three_quarter_height), (255, 0, 0), 2)
 
-#     # Convert BGR to RGB (matplotlib displays in RGB by default)
-#     depth_colormap_rgb = cv2.cvtColor(depth_colormap, cv2.COLOR_BGR2RGB)
-    
-#     # Display the image using matplotlib
-#     plt.figure(figsize=(10, 5))  # You can adjust the figure size as needed
-#     plt.imshow(depth_colormap_rgb)
-#     plt.title('Depth Colormap')  # You can customize the title as needed
-#     plt.axis('off')  # Hide the axis
-#     plt.show()
-    
-
-# Assuming these are set somewhere in your code
-fig, ax = plt.subplots()
-plt.ion()  # Interactive mode on
-image_display = ax.imshow(np.zeros((480, 640, 3)))  # Placeholder for the first image
-
-def display_depth_colormap(depth_colormap):
-    global image_display
-
-    if image_display is None:
-        # Initialize image_display with the first frame
-        image_display = ax.imshow(np.zeros(depth_colormap.shape))
-    
+def add_lines_to_image(image):
     # Drawing the lines as before
-    height, width = depth_colormap.shape[:2]
+    height, width = image.shape[:2]
     one_third, two_third = width // 3, width * 2 // 3
     three_quarter_height = height * 3 // 4
 
-    cv2.line(depth_colormap, (one_third, 0), (one_third, height), (255, 0, 0), 2)
-    cv2.line(depth_colormap, (two_third, 0), (two_third, height), (255, 0, 0), 2)
-    cv2.line(depth_colormap, (0, three_quarter_height), (width, three_quarter_height), (255, 0, 0), 2)
+    # Draw vertical lines
+    cv2.line(image, (one_third, 0), (one_third, height), (255, 255, 255), 2)
+    cv2.line(image, (two_third, 0), (two_third, height), (255, 255, 255), 2)
+    
+    # Draw horizontal line
+    cv2.line(image, (0, three_quarter_height), (width, three_quarter_height), (255, 255, 255), 2)
 
-    # Update the displayed image
-    image_display.set_data(depth_colormap)
-
-    # Ensuring the plot is correctly updated
-    plt.draw()
-    plt.pause(0.001)  # A short pause to allow the GUI to update
+    return image

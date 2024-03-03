@@ -8,7 +8,7 @@ import traceback
 from classes.control_system import ConstrolSystem
 from classes.gps import GPS
 from classes.depth_camera import DepthCamera
-from classes.helpers import get_turn_direction_from_depth_data, display_depth_colormap
+from classes.helpers import get_turn_direction_from_depth_data
 from classes.google_maps import GoogleMaps
 
 
@@ -47,8 +47,8 @@ class AutonomousRCController:
     def reset(self):
         self.stop() # Stop the system
         # reset rc
-        self.rc = ConstrolSystem(self.offset)
         self.depth_camera = DepthCamera()
+        self.rc = ConstrolSystem(self.offset)
 
         # Init threads
         self.pause_event = Event()  # This event controls the pause state.
@@ -90,15 +90,16 @@ class AutonomousRCController:
         self.status = "running"
 
     def stop(self):
+        self.status = "stopped"
         self.rc.disable_controls()
         self.stop_event.set()  # Indicate that the run loop should stop
         self.resume()  # If it's paused, we need to resume it to allow exit
-        self.thread.join()  # Wait for the thread to finish
+        if self.thread.is_alive():  # Check if the thread has been started and is still running
+            self.thread.join()  # Wait for the thread to finish
         
         # Clean up
         # self.gps.stop()
         self.depth_camera.stop()
-        self.status = "stopped"
 
     # The main loop
     def run(self):
@@ -107,8 +108,8 @@ class AutonomousRCController:
                 self.pause_event.wait()  # Wait will block if the event is cleared, simulating a pause
                 color_image, depth_image, depth_colormap = self.depth_camera.get_image_data()
                 if depth_image is not None:
-                    if self.test_mode: 
-                        display_depth_colormap(depth_colormap)
+                    # if self.test_mode: 
+                    #     display_depth_colormap(depth_colormap)
                     self.decide_action(depth_image)
                 else:
                     # Handle frame retrieval failure

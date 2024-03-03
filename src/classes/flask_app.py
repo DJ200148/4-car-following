@@ -13,6 +13,10 @@ def create_app(controller: AutonomousRCController, index_page_path, template_fol
 
     @app.route('/start', methods=['GET'])
     def start():
+        # Check if the status is not ready
+        if controller.status != 'ready':
+            return jsonify({'error': f'The RC is not ready, current status: {controller.status}'}), 409
+        
         # Get the 'coords' query parameter as a comma-separated string (e.g., "x,y")
         coords_string = request.args.get('coords', '')
         
@@ -33,6 +37,10 @@ def create_app(controller: AutonomousRCController, index_page_path, template_fol
 
     @app.route('/pause', methods=['GET'])
     def pause():
+        # Check if the status is not running
+        if controller.status != 'running':
+            return jsonify({'error': f'The RC is not running, current status: {controller.status}'}), 409
+        
         try:
             controller.pause()
             return jsonify({'message': 'RC car paused'}), 200
@@ -41,6 +49,10 @@ def create_app(controller: AutonomousRCController, index_page_path, template_fol
 
     @app.route('/resume', methods=['GET'])
     def resume():
+        # Check if the status is not paused
+        if controller.status != 'paused':
+            return jsonify({'error': f'The RC is not paused, current status: {controller.status}'}), 409
+        
         try:
             controller.resume()
             return jsonify({'message': 'RC car resumed'}), 200
@@ -69,9 +81,11 @@ def create_app(controller: AutonomousRCController, index_page_path, template_fol
     def status():
         return jsonify({'message': f'RC car status: {controller.status}'})
     
-    def generate_camera_stream():
+    def generate_camera_stream_color_image():
         while True:
-            frame = controller.depth_camera.get_jpeg_frame()
+            while controller.status != 'ready' and controller.status != 'running' and controller.status != 'paused':
+                pass
+            frame = controller.depth_camera.get_jpeg_color_image_frame(True)
             if frame:
                 yield (b'--frame\r\n'
                     b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
@@ -79,8 +93,26 @@ def create_app(controller: AutonomousRCController, index_page_path, template_fol
                 # Handle error or no frame scenario
                 time.sleep(0.1)  # Prevent tight loop if there's an error
 
-    @app.route('/video_feed')
-    def video_feed():
+    @app.route('/video_feed_color_image')
+    def video_feed_color_image():
         """Route to stream video from the camera."""
-        return Response(generate_camera_stream(), mimetype='multipart/x-mixed-replace; boundary=frame')
+        return Response(generate_camera_stream_color_image(), mimetype='multipart/x-mixed-replace; boundary=frame')
+    
+    def generate_camera_stream_depth_colormap():
+        while True:
+            while controller.status != 'ready' and controller.status != 'running' and controller.status != 'paused':
+                pass
+            frame = controller.depth_camera.get_jpeg_depth_colormap_frame(True)
+            if frame:
+                yield (b'--frame\r\n'
+                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+            else:
+                # Handle error or no frame scenario
+                time.sleep(0.1)  # Prevent tight loop if there's an error
+
+    @app.route('/video_feed_depth_colormap')
+    def video_feed_depth_colormap():
+        """Route to stream video from the camera."""
+        return Response(generate_camera_stream_depth_colormap(), mimetype='multipart/x-mixed-replace; boundary=frame')
+    
     return app
