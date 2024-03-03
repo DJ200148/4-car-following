@@ -1,6 +1,7 @@
 from threading import Thread, Event
 from time import sleep
 import numpy as np
+import traceback
 
 # Classes
 # from classes.yolop_model import YolopModel
@@ -111,7 +112,8 @@ class AutonomousRCController:
                 if self.test_mode: display_depth_colormap(depth_colormap)
                 self.decide_action(depth_image)
         except Exception as e:
-            print(e)
+            print(f"An error occurred: {e}")
+            traceback.print_exc()  # This prints the traceback details
             self.rc.disable_controls()
 
     def decide_action(self, depth_image):
