@@ -56,9 +56,6 @@ class ConstrolSystem:
         self.set_direction_gpio()
         self.set_gpio_value(0)
     
-    def run_command(self, command):
-        subprocess.run(command, shell=True, check=True)
-
     def set_export_gpio(self, gpio_pin):
         # Export the GPIO pin
         gpio_path = f'/sys/class/gpio/gpio{gpio_pin}'
@@ -77,8 +74,14 @@ class ConstrolSystem:
 
     def set_direction_gpio(self, direction='out'):
         # Set the direction of the GPIO pin to "out"
-        self.run_command(f'echo {direction} > /sys/class/gpio/gpio{self.shutdown_pin}/direction')
-
+        try:
+            subprocess.run(['echo', {direction}, '>', f'/sys/class/gpio/gpio{self.shutdown_pin}/direction'], shell=True, check=True)
+        except subprocess.CalledProcessError as e:
+                print(f"Failed set direction {direction}: {e}")
+    
     def set_gpio_value(self, value):
         # Set the value of the GPIO pin
-        self.run_command(f'echo {value} > /sys/class/gpio/gpio{self.shutdown_pin}/value')
+        try:
+            self.run_command(f'echo {value} > /sys/class/gpio/gpio{self.shutdown_pin}/value')
+        except subprocess.CalledProcessError as e:
+                print(f"Failed to set value {value}: {e}")
