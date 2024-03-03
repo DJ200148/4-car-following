@@ -101,7 +101,6 @@ class AutonomousRCController:
 
     # The main loop
     def run(self):
-        # depth_camera = DepthCamera()
         try:
             while not self.stop_event.is_set():
                 self.pause_event.wait()  # Wait will block if the event is cleared, simulating a pause
@@ -110,56 +109,27 @@ class AutonomousRCController:
                 self.decide_action(depth_image)
         except Exception as e:
             print(e)
-            # self.rc.brake()
+            self.rc.disable_controls()
 
     def decide_action(self, depth_image):
         # Gather data for the decision
-        # color_image, depth_image, depth_colormap = self.depth_camera.get_image_data()
-        # cv2.imshow('Depth Colormap', depth_colormap)
         direction = get_turn_direction_from_depth_data(depth_image, low_threshold=self.low_threshold, high_threshold=self.high_threshold)
         if self.test_mode: print(direction)
         
-        # if direction == 'forward':
-        #     self.rc.turn()
-        #     self.rc.forward(60)
-        # elif direction == 'right':
-        #     self.rc.turn(35)
-        #     self.rc.forward(60)
-        # elif direction == 'left':
-        #     self.rc.turn(-35)
-        #     self.rc.forward(60)
-        # else:
-        #     self.rc.brake()
+        if direction == 'forward':
+            self.rc.turn()
+            self.rc.forward(60)
+        elif direction == 'right':
+            self.rc.turn(35)
+            self.rc.forward(60)
+        elif direction == 'left':
+            self.rc.turn(-35)
+            self.rc.forward(60)
+        else:
+            self.rc.brake()
 
-        # Make a decision
-        # if self.should_turn_left():
-        #     self.rc.turn_left()
-        # elif self.should_turn_right():
-        #     self.rc.turn_right()
-        # elif self.should_go_forward():
-        #     self.rc.turn_center()
-        #     self.rc.forward()
-        # else:
-        #     self.rc.brake()
         pass
 
-    # def should_turn_left(self):
-    #     pass
-
-    # def should_turn_right(self):
-    #     pass
-
-    # def should_go_forward(self):
-    #     pass
-
-    # def should_reverse(self):
-    #     pass
-
-    # def should_slow_down(self):
-    #     pass
-
-    # def should_speed_up(self):
-    #     pass
     def get_orientation(coor, compared_coor):
         """based off of 2 given coordinates calculates degree to 2nd coordinate N=0"""
         new_origin_coor = (compared_coor[0] - coor[0],compared_coor[1]-coor[1])
