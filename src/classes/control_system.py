@@ -60,14 +60,17 @@ class ConstrolSystem:
         self.set_direction_gpio()
         self.set_gpio_value(0)
     
+    def run_command(self, command):
+        subprocess.run(command, shell=True, check=True)
+
     def set_export_gpio(self):
         # Export the GPIO pin
-        subprocess.run(['echo', str(self.shutdown_pin), '>', '/sys/class/gpio/export'])
-    
+        self.run_command(f'echo {self.shutdown_pin} > /sys/class/gpio/export')
+
     def set_direction_gpio(self, direction='out'):
         # Set the direction of the GPIO pin to "out"
-        subprocess.run(['echo', str(direction), '>', f'/sys/class/gpio/gpio{self.shutdown_pin}/direction'])
-    
+        self.run_command(f'echo {direction} > /sys/class/gpio/gpio{self.shutdown_pin}/direction')
+
     def set_gpio_value(self, value):
         # Set the value of the GPIO pin
-        subprocess.run(['echo', str(value), '>', f'/sys/class/gpio/gpio{self.shutdown_pin}/value'])
+        self.run_command(f'echo {value} > /sys/class/gpio/gpio{self.shutdown_pin}/value')
