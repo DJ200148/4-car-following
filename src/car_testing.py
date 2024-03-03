@@ -16,9 +16,9 @@ try:
     print("tried to go centered")
     time.sleep(2)
 
-    con.enable_controls()
-    print("Enabled")
-    time.sleep(2)
+    # con.enable_controls()
+    # print("Enabled")
+    # time.sleep(2)
 
     con.turn(35)
     print("turned right")
