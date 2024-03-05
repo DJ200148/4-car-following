@@ -17,7 +17,7 @@ SERVO_CHANNEL = 0
 THROTTLE_CHANNEL = 1
 
 class ConstrolSystem:
-    def __init__(self, offset=7, shutdown_pin='466'):
+    def __init__(self, offset=9, shutdown_pin='466'):
         # Postive offset goes right
         print("Initializing Control System")
         self.offset = offset
@@ -49,6 +49,8 @@ class ConstrolSystem:
         self.kit.servo[SERVO_CHANNEL].angle = BASE_TURN_ANGLE + angle + self.offset
     
     def disable_controls(self):
+        self.brake()
+        self.turn()
         self.set_gpio_value(1)
 
     def enable_controls(self):

@@ -4,6 +4,8 @@ import time
 con = ConstrolSystem(offset=7)
 
 try:
+    con.forward(90)
+    time.sleep(1)
     con.disable_controls()
     print("Stopped")
     time.sleep(2)

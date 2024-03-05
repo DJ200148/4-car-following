@@ -91,9 +91,9 @@ class AutonomousRCController:
 
     def stop(self):
         self.status = "stopped"
-        self.rc.disable_controls()
         self.stop_event.set()  # Indicate that the run loop should stop
         self.resume()  # If it's paused, we need to resume it to allow exit
+        self.rc.disable_controls()
         if self.thread.is_alive():  # Check if the thread has been started and is still running
             self.thread.join()  # Wait for the thread to finish
         
@@ -106,6 +106,7 @@ class AutonomousRCController:
         try:
             while not self.stop_event.is_set():
                 self.pause_event.wait()  # Wait will block if the event is cleared, simulating a pause
+                if self.stop_event.is_set(): break # 
                 color_image, depth_image, depth_colormap = self.depth_camera.get_image_data()
                 if depth_image is not None:
                     # if self.test_mode: 
@@ -124,15 +125,16 @@ class AutonomousRCController:
         direction = get_turn_direction_from_depth_data(depth_image, low_threshold=self.low_threshold, high_threshold=self.high_threshold)
         if self.test_mode: print(direction)
         
+        speed = 70
         if direction == 'forward':
             self.rc.turn()
-            self.rc.forward(60)
+            self.rc.forward(speed)
         elif direction == 'right':
             self.rc.turn(35)
-            self.rc.forward(60)
+            self.rc.forward(speed)
         elif direction == 'left':
             self.rc.turn(-35)
-            self.rc.forward(60)
+            self.rc.forward(speed)
         else:
             self.rc.brake()
 
