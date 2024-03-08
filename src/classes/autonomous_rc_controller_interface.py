@@ -1,6 +1,11 @@
 from abc import ABC, abstractmethod
 
 def AutonomousRCControllerInterface(ABC):
+    @property
+    @abstractmethod
+    def depth_camera(self):
+        pass
+
     @abstractmethod
     def start(self, end_cords):
         pass
