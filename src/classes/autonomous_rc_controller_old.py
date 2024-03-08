@@ -10,8 +10,9 @@ from classes.gps import GPS
 from classes.depth_camera import DepthCamera
 from classes.helpers import get_turn_direction_from_depth_data
 from classes.google_maps import GoogleMaps
-from classes.status_enum import Status
 from classes.autonomous_rc_controller_interface import AutonomousRCControllerInterface
+from classes.status_enum import Status
+
 
 class AutonomousRCController(AutonomousRCControllerInterface):
     def __init__(self, test_mode=False, low_threshold=400, high_threshold=700, offset=7):
@@ -23,9 +24,9 @@ class AutonomousRCController(AutonomousRCControllerInterface):
         
         self.rc = ConstrolSystem(self.offset)
         # self.yolop_model = YolopModel()
-        self.gps = GPS(port='/dev/ttyUSB0')
+        # self.gps = GPS(port='/dev/ttyUSB0')
         self.depth_camera = DepthCamera()
-        self.google_maps = GoogleMaps()
+        # self.google_maps = GoogleMaps()
 
         # Init threads
         self.pause_event = Event()  # This event controls the pause state.
@@ -35,22 +36,15 @@ class AutonomousRCController(AutonomousRCControllerInterface):
         self.pause_event.set()
 
         # Init the start and end cords
-        
-        self.prev_cords
-        self.start_cords
-        self.end_cords
-        self.curr_path_target
-        self.path
-        self.directions
+        # self.start_cords = self.gps.get_coordinates()
+        # self.end_cords
         # self.current_cords = self.start_cords
         # self.previous_cords = self.start_cords
+        # self.path
+        # self.directions
         # self.current_orientation
         # self.desired_orientation
         # wait for all components to be ready
-
-    @property
-    def curr_cords(self):
-        return self.gps.get_coordinates()
     
     def get_status(self):
         return self.status
@@ -60,8 +54,6 @@ class AutonomousRCController(AutonomousRCControllerInterface):
         # reset rc
         self.depth_camera = DepthCamera()
         self.rc = ConstrolSystem(self.offset)
-        self.gps = GPS(port='/dev/ttyUSB0')
-        self.google_maps = GoogleMaps()
 
         # Init threads
         self.pause_event = Event()  # This event controls the pause state.
@@ -81,17 +73,9 @@ class AutonomousRCController(AutonomousRCControllerInterface):
 
     # Operations
     def start(self, end_cords):
-        if self.status != "ready":
-            raise RuntimeError("The controller is not ready to start")
-        # Set cords
-        self.prev_cords = self.curr_cords
-        self.start_cords = self.curr_cords
-        self.end_cords = end_cords
-
-        # Get the directions and path
-        self.directions = self.google_maps.get_directions(self.start_cords, self.end_cords)
-        self.path = self.google_maps.directions_to_path(self.directions)
-        self.curr_path_target = self.path.pop()
+        # self.end_cords = end_cords
+        # self.directions = self.google_maps.get_directions(self.start_cords, self.end_cords)
+        # self.path = self.google_maps.directions_to_path(self.directions)
 
         # calibrate the position of the RC
         # self.calibrate_position()
@@ -101,16 +85,14 @@ class AutonomousRCController(AutonomousRCControllerInterface):
         self.status = Status.RUNNING
 
     def pause(self):
-        if self.status == Status.RUNNING:
-            self.rc.disable_controls()
-            self.pause_event.clear()  # Clearing the event pauses the loop
-            self.status = Status.PAUSED
+        self.rc.disable_controls()
+        self.pause_event.clear()  # Clearing the event pauses the loop
+        self.status = Status.PAUSED
 
     def resume(self):
-        if self.status == Status.PAUSED:
-            self.rc.enable_controls()
-            self.pause_event.set()  # Setting the event resumes the loop
-            self.status = Status.running
+        self.rc.enable_controls()
+        self.pause_event.set()  # Setting the event resumes the loop
+        self.status = Status.RUNNING
 
     def stop(self):
         self.status = Status.STOPPED
@@ -132,105 +114,36 @@ class AutonomousRCController(AutonomousRCControllerInterface):
                 if self.stop_event.is_set(): break # 
                 color_image, depth_image, depth_colormap = self.depth_camera.get_image_data()
                 if depth_image is not None:
-                    # decide action
-                    direction = get_turn_direction_from_depth_data(depth_image, low_threshold=self.low_threshold, high_threshold=self.high_threshold)
-                    if self.test_mode: print(direction)
-                    
-                    # default speed and angle for calibration
-                    speed = 70
-                    angle = 35
-                    if direction == 'forward':
-                        self.do_forward_action(speed)
-                    elif direction == 'right':
-                        self.make_right_turn_around_obstacle(speed, angle)
-                    elif direction == 'left':
-                        self.make_left_turn_around_obstacle(speed, angle)
-                    else:
-                        self.rc.brake()
-
-                    # self.decide_action(depth_image)
+                    # if self.test_mode: 
+                    #     display_depth_colormap(depth_colormap)
+                    self.decide_action(depth_image)
+                else:
+                    # Handle frame retrieval failure
+                    pass
         except Exception as e:
             print(f"An error occurred: {e}")
             traceback.print_exc()  # This prints the traceback details
             self.rc.disable_controls()
-    
-    def do_forward_action(self, speed):
-        # go straight
-        self.rc.turn()
-        self.rc.forward(speed)
 
-        # check the current position and orientation of the RC then make any nessary adjustments for the global direction
-
-
-    def make_right_turn_around_obstacle(self, speed, angle):
-        # turn right
-        self.rc.turn(angle)
-        self.rc.forward(speed)
-        sleep(0.5)
-
-        # go straight
-        self.rc.turn()
-        sleep(0.5)
-
-        # turn left
-        self.rc.turn(-angle)
-        sleep(0.5)
-
-        # go straight
-        self.rc.turn()
-        sleep(0.5)
-
-        # turn right
-        self.rc.turn(angle)
-        sleep(0.5)
-
-        # go straight
-        self.rc.turn()
-
-    def make_left_turn_around_obstacle(self, speed, angle):
-        # turn left
-        self.rc.turn(-angle)
-        self.rc.forward(speed)
-        sleep(0.5)
-
-        # go straight
-        self.rc.turn()
-        sleep(0.5)
-
-        # turn right
-        self.rc.turn(angle)
-        sleep(0.5)
-
-        # go straight
-        self.rc.turn()
-        sleep(0.5)
-
-        # turn left
-        self.rc.turn(-angle)
-        sleep(0.5)
-
-        # go straight
-        self.rc.turn()
-    
-    # def decide_action(self, depth_image):
-    #     # Gather data for the decision
-    #     direction = get_turn_direction_from_depth_data(depth_image, low_threshold=self.low_threshold, high_threshold=self.high_threshold)
-    #     if self.test_mode: print(direction)
+    def decide_action(self, depth_image):
+        # Gather data for the decision
+        direction = get_turn_direction_from_depth_data(depth_image, low_threshold=self.low_threshold, high_threshold=self.high_threshold)
+        if self.test_mode: print(direction)
         
-    #     speed = 70
-    #     if direction == 'forward':
-    #         self.rc.turn()
-    #         self.rc.forward(speed)
-    #     elif direction == 'right':
-    #         self.rc.turn(35)
-    #         self.rc.forward(speed)
-    #     elif direction == 'left':
-    #         self.rc.turn(-35)
-    #         self.rc.forward(speed)
-    #     else:
-    #         self.rc.brake()
+        speed = 70
+        if direction == 'forward':
+            self.rc.turn()
+            self.rc.forward(speed)
+        elif direction == 'right':
+            self.rc.turn(35)
+            self.rc.forward(speed)
+        elif direction == 'left':
+            self.rc.turn(-35)
+            self.rc.forward(speed)
+        else:
+            self.rc.brake()
 
-    #     pass
+        pass
 
     def get_orientation(coor, compared_coor):
         """based off of 2 given coordinates calculates degree to 2nd coordinate N=0"""

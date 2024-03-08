@@ -1,9 +1,11 @@
 from flask import Flask, jsonify, request, render_template, Response
 from classes.autonomous_rc_controller import AutonomousRCController
+from classes.status_enum import Status
 import time
+from classes.autonomous_rc_controller_interface import AutonomousRCControllerInterface
 
 
-def create_app(controller: AutonomousRCController, index_page_path, template_folder='/templates', shared_state=None):
+def create_app(controller: AutonomousRCControllerInterface, index_page_path, template_folder='/templates', shared_state=None):
     app = Flask(__name__, template_folder=template_folder)
     
     # Flask endpoints
@@ -14,8 +16,8 @@ def create_app(controller: AutonomousRCController, index_page_path, template_fol
     @app.route('/start', methods=['GET'])
     def start():
         # Check if the status is not ready
-        if controller.status != 'ready':
-            return jsonify({'error': f'The RC is not ready, current status: {controller.status}'}), 409
+        if controller.get_status() != Status.READY:
+            return jsonify({'error': f'The RC is not ready, current status: {controller.get_status()}'}), 409
         
         # Get the 'coords' query parameter as a comma-separated string (e.g., "x,y")
         coords_string = request.args.get('coords', '')
@@ -38,8 +40,8 @@ def create_app(controller: AutonomousRCController, index_page_path, template_fol
     @app.route('/pause', methods=['GET'])
     def pause():
         # Check if the status is not running
-        if controller.status != 'running':
-            return jsonify({'error': f'The RC is not running, current status: {controller.status}'}), 409
+        if controller.get_status() != Status.RUNNING:
+            return jsonify({'error': f'The RC is not running, current status: {controller.get_status()}'}), 409
         
         try:
             controller.pause()
@@ -50,8 +52,8 @@ def create_app(controller: AutonomousRCController, index_page_path, template_fol
     @app.route('/resume', methods=['GET'])
     def resume():
         # Check if the status is not paused
-        if controller.status != 'paused':
-            return jsonify({'error': f'The RC is not paused, current status: {controller.status}'}), 409
+        if controller.get_status() != Status.PAUSED:
+            return jsonify({'error': f'The RC is not paused, current status: {controller.get_status()}'}), 409
         
         try:
             controller.resume()
@@ -79,11 +81,11 @@ def create_app(controller: AutonomousRCController, index_page_path, template_fol
 
     @app.route('/status', methods=['GET'])
     def status():
-        return jsonify({'message': f'RC car status: {controller.status}'})
+        return jsonify({'message': f'RC car status: {controller.get_status()}'})
     
     def generate_camera_stream_color_image():
         while True:
-            while controller.status != 'ready' and controller.status != 'running' and controller.status != 'paused':
+            while controller.get_status() != Status.READY and controller.get_status() != Status.RUNNING and controller.get_status() != Status.PAUSED:
                 pass
             frame = controller.depth_camera.get_jpeg_color_image_frame(True)
             if frame:
@@ -100,7 +102,7 @@ def create_app(controller: AutonomousRCController, index_page_path, template_fol
     
     def generate_camera_stream_depth_colormap():
         while True:
-            while controller.status != 'ready' and controller.status != 'running' and controller.status != 'paused':
+            while controller.get_status() != Status.READY and controller.get_status() != Status.RUNNING and controller.get_status() != Status.PAUSED:
                 pass
             frame = controller.depth_camera.get_jpeg_depth_colormap_frame(True)
             if frame:
