@@ -22,6 +22,7 @@ this project employs a multi-sensor approach, utilizing depth data, RGB data, NM
 # Setting up
 ##### Software and Hardware Requirement 
 Python 3.8 or later.
+
 A Google Maps API key.
 
 # Desgin and Implementation
