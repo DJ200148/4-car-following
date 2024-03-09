@@ -32,12 +32,13 @@ Link to YoloV8 GitHub: https://github.com/ultralytics/ultralytics
 
 # Web Inteface 
 
-##### Flask Implementation and API
 
 
 # Acknowledgement
+Kartik Sharama
+
+Chat GPT
+
 
 # Reference links
-
-
-
+[Yolo Repository](https://github.com/ultralytics/ultralytics)
