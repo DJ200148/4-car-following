@@ -10,11 +10,11 @@ from classes.gps import GPS
 from classes.depth_camera import DepthCamera
 from classes.helpers import get_turn_direction_from_depth_data
 from classes.google_maps import GoogleMaps
-from classes.autonomous_rc_controller_interface import AutonomousRCControllerInterface
+# from classes.autonomous_rc_controller_interface import AutonomousRCControllerInterface
 from classes.status_enum import Status
 
 
-class AutonomousRCController(AutonomousRCControllerInterface):
+class AutonomousRCController():
     def __init__(self, test_mode=False, low_threshold=400, high_threshold=700, offset=7):
         self.test_mode = test_mode
         self.low_threshold = low_threshold
@@ -52,7 +52,7 @@ class AutonomousRCController(AutonomousRCControllerInterface):
     def reset(self):
         self.stop() # Stop the system
         # reset rc
-        self.depth_camera = DepthCamera()
+        self.cam = DepthCamera()
         self.rc = ConstrolSystem(self.offset)
 
         # Init threads

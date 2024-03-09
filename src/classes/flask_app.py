@@ -1,11 +1,11 @@
 from flask import Flask, jsonify, request, render_template, Response
-from classes.autonomous_rc_controller import AutonomousRCController
+from classes.autonomous_rc_controller_avoid import AutonomousRCController
 from classes.status_enum import Status
 import time
-from classes.autonomous_rc_controller_interface import AutonomousRCControllerInterface
+# from classes.autonomous_rc_controller_interface import AutonomousRCControllerInterface
 
 
-def create_app(controller: AutonomousRCControllerInterface, index_page_path, template_folder='/templates', shared_state=None):
+def create_app(controller: AutonomousRCController, index_page_path, template_folder='/templates', shared_state=None):
     app = Flask(__name__, template_folder=template_folder)
     
     # Flask endpoints

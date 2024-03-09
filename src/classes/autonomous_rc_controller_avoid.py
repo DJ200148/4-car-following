@@ -11,9 +11,9 @@ from classes.depth_camera import DepthCamera
 from classes.helpers import get_turn_direction_from_depth_data
 from classes.google_maps import GoogleMaps
 from classes.status_enum import Status
-from classes.autonomous_rc_controller_interface import AutonomousRCControllerInterface
+# from classes.autonomous_rc_controller_interface import AutonomousRCControllerInterface
 
-class AutonomousRCController(AutonomousRCControllerInterface):
+class AutonomousRCController():
     def __init__(self, test_mode=False, low_threshold=400, high_threshold=700, offset=7):
         self.test_mode = test_mode
         self.low_threshold = low_threshold
@@ -23,9 +23,9 @@ class AutonomousRCController(AutonomousRCControllerInterface):
         
         self.rc = ConstrolSystem(self.offset)
         # self.yolop_model = YolopModel()
-        self.gps = GPS(port='/dev/ttyUSB0')
+        # self.gps = GPS(port='/dev/ttyUSB0')
         self.depth_camera = DepthCamera()
-        self.google_maps = GoogleMaps()
+        # self.google_maps = GoogleMaps()
 
         # Init threads
         self.pause_event = Event()  # This event controls the pause state.
@@ -36,12 +36,12 @@ class AutonomousRCController(AutonomousRCControllerInterface):
 
         # Init the start and end cords
         
-        self.prev_cords
-        self.start_cords
-        self.end_cords
-        self.curr_path_target
-        self.path
-        self.directions
+        # self.prev_cords
+        # self.start_cords
+        # self.end_cords
+        # self.curr_path_target
+        # self.path
+        # self.directions
         # self.current_cords = self.start_cords
         # self.previous_cords = self.start_cords
         # self.current_orientation
@@ -50,9 +50,9 @@ class AutonomousRCController(AutonomousRCControllerInterface):
 
     
     
-    @property
-    def curr_cords(self):
-        return self.gps.get_coordinates()
+    # @property
+    # def curr_cords(self):
+    #     return self.gps.get_coordinates()
     
     def get_status(self):
         return self.status
@@ -62,8 +62,8 @@ class AutonomousRCController(AutonomousRCControllerInterface):
         # reset rc
         self.depth_camera = DepthCamera()
         self.rc = ConstrolSystem(self.offset)
-        self.gps = GPS(port='/dev/ttyUSB0')
-        self.google_maps = GoogleMaps()
+        # self.gps = GPS(port='/dev/ttyUSB0')
+        # self.google_maps = GoogleMaps()
 
         # Init threads
         self.pause_event = Event()  # This event controls the pause state.
@@ -83,17 +83,17 @@ class AutonomousRCController(AutonomousRCControllerInterface):
 
     # Operations
     def start(self, end_cords):
-        if self.status != "ready":
+        if self.status != Status.READY:
             raise RuntimeError("The controller is not ready to start")
         # Set cords
-        self.prev_cords = self.curr_cords
-        self.start_cords = self.curr_cords
-        self.end_cords = end_cords
+        # self.prev_cords = self.curr_cords
+        # self.start_cords = self.curr_cords
+        # self.end_cords = end_cords
 
         # Get the directions and path
-        self.directions = self.google_maps.get_directions(self.start_cords, self.end_cords)
-        self.path = self.google_maps.directions_to_path(self.directions)
-        self.curr_path_target = self.path.pop()
+        # self.directions = self.google_maps.get_directions(self.start_cords, self.end_cords)
+        # self.path = self.google_maps.directions_to_path(self.directions)
+        # self.curr_path_target = self.path.pop()
 
         # calibrate the position of the RC
         # self.calibrate_position()
@@ -112,7 +112,7 @@ class AutonomousRCController(AutonomousRCControllerInterface):
         if self.status == Status.PAUSED:
             self.rc.enable_controls()
             self.pause_event.set()  # Setting the event resumes the loop
-            self.status = Status.running
+            self.status = Status.RUNNING
 
     def stop(self):
         self.status = Status.STOPPED
@@ -139,14 +139,17 @@ class AutonomousRCController(AutonomousRCControllerInterface):
                     if self.test_mode: print(direction)
                     
                     # default speed and angle for calibration
-                    speed = 70
+                    speed = 60
                     angle = 35
+                    turn_delay = .75
+                    forward_delay = .5
+                    full_turn_delay = 2.1
                     if direction == 'forward':
                         self.do_forward_action(speed)
                     elif direction == 'right':
-                        self.make_right_turn_around_obstacle(speed, angle)
+                        self.make_right_turn_around_obstacle(speed, angle, turn_delay, forward_delay, full_turn_delay)
                     elif direction == 'left':
-                        self.make_left_turn_around_obstacle(speed, angle)
+                        self.make_left_turn_around_obstacle(speed, angle, turn_delay, forward_delay, full_turn_delay)
                     else:
                         self.rc.brake()
 
@@ -164,52 +167,52 @@ class AutonomousRCController(AutonomousRCControllerInterface):
         # check the current position and orientation of the RC then make any nessary adjustments for the global direction
 
 
-    def make_right_turn_around_obstacle(self, speed, angle):
+    def make_right_turn_around_obstacle(self, speed, angle, turn_delay, forward_delay, full_turn_delay):
         # turn right
-        self.rc.turn(angle)
         self.rc.forward(speed)
-        sleep(0.5)
+        self.rc.turn(angle)
+        sleep(turn_delay)
 
         # go straight
         self.rc.turn()
-        sleep(0.5)
+        sleep(forward_delay)
 
         # turn left
         self.rc.turn(-angle)
-        sleep(0.5)
+        sleep(full_turn_delay)
 
         # go straight
         self.rc.turn()
-        sleep(0.5)
+        sleep(forward_delay/2)
 
         # turn right
         self.rc.turn(angle)
-        sleep(0.5)
+        sleep(turn_delay)
 
         # go straight
         self.rc.turn()
 
-    def make_left_turn_around_obstacle(self, speed, angle):
+    def make_left_turn_around_obstacle(self, speed, angle, turn_delay, forward_delay, full_turn_delay):
         # turn left
-        self.rc.turn(-angle)
         self.rc.forward(speed)
-        sleep(0.5)
+        self.rc.turn(-angle)
+        sleep(turn_delay)
 
         # go straight
         self.rc.turn()
-        sleep(0.5)
+        sleep(forward_delay)
 
         # turn right
         self.rc.turn(angle)
-        sleep(0.5)
+        sleep(full_turn_delay)
 
         # go straight
         self.rc.turn()
-        sleep(0.5)
+        sleep(forward_delay/2)
 
         # turn left
         self.rc.turn(-angle)
-        sleep(0.5)
+        sleep(turn_delay)
 
         # go straight
         self.rc.turn()

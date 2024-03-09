@@ -2,7 +2,7 @@
 
 # Imports
 import os, signal, time, threading
-from classes.autonomous_rc_controller_old import AutonomousRCController
+from classes.autonomous_rc_controller_avoid import AutonomousRCController
 from classes.flask_app import create_app
 
 

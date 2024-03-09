@@ -1,8 +1,7 @@
-from abc import ABC, abstractmethod
+from abc import ABC, abstractmethod, abstractproperty
 
-def AutonomousRCControllerInterface(ABC):
-    @property
-    @abstractmethod
+class AutonomousRCControllerInterface(ABC):
+    @abstractproperty
     def depth_camera(self):
         pass
 
