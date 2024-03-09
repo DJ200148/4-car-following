@@ -1,11 +1,16 @@
 # NavigateNCount 
 
-Using the YoloV8 model to detect objects to avoid collisions.
+Leveraging the YOLOv8 model for precise object detection, integrating depth maps for collision avoidance, and incorporating a GPS receiver alongside the Google Maps API,  to create a comprehensive system for autonomous navigation and obstacle avoidance.
 
 Link to YoloV8 GitHub: https://github.com/ultralytics/ultralytics
 
+Link to Google Maps Services Python GitHub: https://github.com/googlemaps/google-maps-services-python.git
+
+
 # Introduction 
 ##### Abstract
+this project employs a multi-sensor approach, utilizing depth data, RGB data, NMEA data, and the Google API to facilitate dynamic navigation across diverse scenarios. Simultaneously, the system incorporates YOLOv8, a state-of-the-art object detection model, to not only identify but also quantify objects encountered along its traversed path. This integrated framework provides real-time insights by leveraging advanced computer vision techniques for object detection and counting.
+
 
 ##### Result
 # Using ML
@@ -16,6 +21,8 @@ Link to YoloV8 GitHub: https://github.com/ultralytics/ultralytics
 
 # Setting up
 ##### Software and Hardware Requirement 
+Python 3.8 or later.
+A Google Maps API key.
 
 # Desgin and Implementation
 
@@ -30,12 +37,16 @@ Link to YoloV8 GitHub: https://github.com/ultralytics/ultralytics
 
 ##### GPS and Path Following
 
-# Web Inteface 
+# Web Interface 
 
 
 
 # Acknowledgement
-Kartik Sharama
+Kartik Patwari
+
+Professor Chen-Nee Chuah
+
+Sharama
 
 Chat GPT
 
