@@ -1,7 +1,7 @@
 from serial import Serial, SerialException
 import numpy as np
 class GPS:
-    def __init__(self, port, baudrate=9600, timeout=1):
+    def __init__(self, port='/dev/gps0', baudrate=9600, timeout=1):
         """Initialize GPS connection with a timeout to avoid blocking."""
         try:
             self.gps = Serial(port, baudrate, timeout=timeout)
