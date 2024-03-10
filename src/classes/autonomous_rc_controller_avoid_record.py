@@ -137,7 +137,7 @@ class AutonomousRCController():
     
         # Get the current date
         current_datetime = datetime.now()
-        formatted_datetime = current_datetime.strftime('%Y-%m-%d-%H:%M')
+        formatted_datetime = current_datetime.strftime('%Y-%m-%d-[%H-%M]')
         self.video_writer = cv2.VideoWriter(f'{self.save_dir}/{formatted_datetime}-capture.mp4', cv2.VideoWriter_fourcc(*'mp4v'), 30, (640, 480))
         
         while not self.yolo_capture_event.is_set():
