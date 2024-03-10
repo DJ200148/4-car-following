@@ -23,7 +23,7 @@ class AutonomousRCController():
         
         self.rc = ConstrolSystem(self.offset)
         # self.yolop_model = YolopModel()
-        # self.gps = GPS(port='/dev/ttyUSB0')
+        # self.gps = GPS()
         self.depth_camera = DepthCamera()
         # self.google_maps = GoogleMaps()
 
@@ -62,7 +62,7 @@ class AutonomousRCController():
         # reset rc
         self.depth_camera = DepthCamera()
         self.rc = ConstrolSystem(self.offset)
-        # self.gps = GPS(port='/dev/ttyUSB0')
+        # self.gps = GPS())
         # self.google_maps = GoogleMaps()
 
         # Init threads
@@ -115,12 +115,13 @@ class AutonomousRCController():
             self.status = Status.RUNNING
 
     def stop(self):
-        self.status = Status.STOPPED
+        self.status = Status.PAUSED
         self.stop_event.set()  # Indicate that the run loop should stop
         self.resume()  # If it's paused, we need to resume it to allow exit
         self.rc.disable_controls()
         if self.thread.is_alive():  # Check if the thread has been started and is still running
             self.thread.join()  # Wait for the thread to finish
+        self.status = Status.STOPPED
         
         # Clean up
         # self.gps.stop()
@@ -139,11 +140,11 @@ class AutonomousRCController():
                     if self.test_mode: print(direction)
                     
                     # default speed and angle for calibration
-                    speed = 60
+                    speed = 65
                     angle = 35
                     turn_delay = .75
-                    forward_delay = .5
-                    full_turn_delay = 2.1
+                    forward_delay = .75
+                    full_turn_delay = 1.9
                     if direction == 'forward':
                         self.do_forward_action(speed)
                     elif direction == 'right':
