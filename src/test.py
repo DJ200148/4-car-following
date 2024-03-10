@@ -16,7 +16,6 @@ print("slept")
 sys.brake()
 print("stopped")
 
-sys.turn_right()
 time.sleep(2)
 sys.turn_center()
 print("Done")
