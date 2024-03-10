@@ -7,24 +7,24 @@ from collections import deque
 # idea add modes making it possible for the car to go into a circle
 class GoogleMaps:
     def __init__(self):
+        self.add_coor = (None, None)
+        self.Directions = []
+        # self.Direction_queue
         try:
             load_dotenv()
             self.api_key = os.getenv('GOOGLE_API_KEY')
             self.gmaps = googlemaps.Client(key = self.api_key)
         except Exception as error:
             print("problem with googlemaps and/or api key \n", error)    
-        self.add_coor
-        self.Directions
-        self.Direction_queue
 
     def get_corrdinates(self, address):
         '''This method will return the coordinates of the address. output: (Lat,Long)'''
         try:
-            self.add_coor = self.gmaps.geocode(address)
-            return self.add_coor
+            return self.gmaps.geocode(address)
+            # self.add_coor = self.gmaps.geocode(address)
+            # return self.add_coor
         except Exception as error:
-            print("problem with getting coordinates \n", error)    
-    
+            print("problem with getting coordinates \n", error)
 
     def get_directions(self, start, end): 
         '''This method will return the directions from the start to the end. (Lat,Long)'''
@@ -42,7 +42,8 @@ class GoogleMaps:
     def directions_to_path(self, directions): 
         '''This method will return the path from the directions. queue of (Lat,Long)'''
         try:
-            self.Direction_queue = deque(directions)
-            return self.Direction_queue
+            return deque(directions)
+            # self.Direction_queue = deque(directions)
+            # return self.Direction_queue
         except Exception as error:
             print("problem with directions_to_path", error)    

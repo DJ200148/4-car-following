@@ -67,8 +67,8 @@ class AutonomousRCController():
         # reset rc
         self.depth_camera = DepthCamera()
         self.rc = ConstrolSystem(self.offset)
-        # self.gps = GPS())
-        # self.google_maps = GoogleMaps()
+        self.gps = GPS()
+        self.google_maps = GoogleMaps()
 
         # Init threads
         self.pause_event = Event()  # This event controls the pause state.
@@ -196,7 +196,7 @@ class AutonomousRCController():
         self.rc.forward(speed)
 
         # check the current position and orientation of the RC then make any nessary adjustments for the global direction
-
+        current_cords = self.gps.get
 
     def make_right_turn_around_obstacle(self, speed, angle, turn_delay, forward_delay, full_turn_delay):
         # turn right
