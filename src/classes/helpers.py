@@ -5,6 +5,11 @@ import math
 from geopy.distance import geodesic
 from geopy.point import Point
 
+def distance_between_points_cartesian(point1, point2):
+    x1, y1 = point1
+    x2, y2 = point2
+    return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+
 def calculate_bearing(lat1, lon1, lat2, lon2):
     """
     Calculates the bearing from point 1 to point 2.
@@ -28,7 +33,7 @@ def calculate_bearing(lat1, lon1, lat2, lon2):
 
     return compass_bearing
 
-def calculate_relative_direction(start_lat, start_lon, current_lat, current_lon, end_lat, end_lon):
+def calculate_relative_direction(start, current, end):
     """
     Calculates whether to turn left or right from the current position to align
     with the path defined by start and end points, and gives the angle with positive
@@ -43,6 +48,13 @@ def calculate_relative_direction(start_lat, start_lon, current_lat, current_lon,
     - A tuple containing the direction to turn ('LEFT' or 'RIGHT') and the angle in degrees.
       The angle is positive for right turns and negative for left turns.
     """
+    
+    start_lat = start[0]
+    start_lon = start[1]
+    current_lat = current[0]
+    current_lon = current[1]
+    end_lat = end[0]
+    end_lon = end[1]
     # Calculate bearings
     start_to_current_bearing = calculate_bearing(start_lat, start_lon, current_lat, current_lon)
     current_to_end_bearing = calculate_bearing(current_lat, current_lon, end_lat, end_lon)

@@ -10,7 +10,7 @@ from datetime import datetime
 from classes.control_system import ConstrolSystem
 from classes.gps import GPS
 from classes.depth_camera import DepthCamera
-from classes.helpers import get_turn_direction_from_depth_data
+from classes.helpers import get_turn_direction_from_depth_data, calculate_relative_direction, distance_between_points_cartesian
 from classes.google_maps import GoogleMaps
 from classes.status_enum import Status
 # from classes.autonomous_rc_controller_interface import AutonomousRCControllerInterface
@@ -78,11 +78,13 @@ class AutonomousRCController():
         self.pause_event.set()
 
         # Init the start and end cords
-        # self.start_cords = self.gps.get_coordinates()
-        # self.current_cords = self.start_cords
-        # self.previous_cords = self.start_cords
-        # self.current_orientation = self.current_orientation
-        # self.desired_orientation = self.desired_orientation
+        self.start_cords
+        self.end_cords
+        self.directions
+        self.path
+        self.prev_path_target
+        self.curr_path_target
+        
         self.status = Status.READY
         
 
@@ -92,13 +94,13 @@ class AutonomousRCController():
             raise RuntimeError("The controller is not ready to start")
         # Set cords
         curr_cords = self.gps.get_coordinates()
-        self.prev_cords = curr_cords
         self.start_cords = curr_cords
         self.end_cords = end_cords
 
         # Get the directions and path
         self.directions = self.google_maps.get_directions(self.start_cords, self.end_cords)
         self.path = self.google_maps.directions_to_path(self.directions)
+        self.prev_path_target = curr_cords
         self.curr_path_target = self.path.pop()
 
         # calibrate the position of the RC
@@ -166,13 +168,14 @@ class AutonomousRCController():
                     if self.test_mode: print(direction)
                     
                     # default speed and angle for calibration
+                    time_for_360_at_45 = 23.5 # seconds it takes to make a 360 at 45 degree turn
                     speed = 65
                     angle = 35
                     turn_delay = .75
                     forward_delay = .75
                     full_turn_delay = 1.9
                     if direction == 'forward':
-                        self.do_forward_action(speed)
+                        self.do_forward_action(speed, time_for_360_at_45)
                     elif direction == 'right':
                         self.make_right_turn_around_obstacle(speed, angle, turn_delay, forward_delay, full_turn_delay)
                     elif direction == 'left':
@@ -191,16 +194,53 @@ class AutonomousRCController():
             if self.video_capture_thread is not None:
                 self.video_capture_thread.join()
 
-    def do_forward_action(self, speed):
+
+    
+    def do_forward_action(self, speed, time_for_360_at_45):
         # go straight
         self.rc.turn()
         self.rc.forward(speed)
 
+
         # check the current position and orientation of the RC then make any nessary adjustments for the global direction
         current_cords = self.gps.get_coordinates()
         
-        # calulate the angle of your location based on the vector from prev to next
+        # check if youve reached the 
+        less_than_distance = .000036 # 4 meters
+        distance = distance_between_points_cartesian(current_cords, self.curr_path_target)
+        if distance <= less_than_distance:
+            # made it to the point get next
+            try:
+                next = self.path.pop()
+            except IndexError:
+                print("Made it to destination.")
+                self.stop_event.set()
+                return
+            
+            # calulate the angle of your location based on the vector from prev to next
+            direction, angle = calculate_relative_direction(self.prev_path_target, current_cords, next)
+            
+            self.prev_path_target = self.curr_path_target
+            self.curr_path_target = next
         
+        else:
+            # calulate the angle of your location based on the vector from prev to next
+            direction, angle = calculate_relative_direction(self.prev_path_target, current_cords, self.curr_path_target)
+        
+        # calulate the time to turn
+        time_per_degree = time_for_360_at_45 / 360
+        time = angle * time_per_degree
+        if angle < 0:
+            # left
+            self.rc.turn(-45)
+            sleep(time)
+            self.rc.turn()
+        elif angle > 0:
+            # right
+            self.rc.turn(45)
+            sleep(time)
+            self.rc.turn()
+            
         
 
     def make_right_turn_around_obstacle(self, speed, angle, turn_delay, forward_delay, full_turn_delay):
