@@ -45,8 +45,14 @@ class ConstrolSystem:
         self.kit.servo[SERVO_CHANNEL].angle = BASE_TURN_ANGLE + self.offset
     
     def turn(self, angle=CENTER_TURN_ANGLE):
-        angle = max(MIN_TURN_ANGLE, min(MAX_TURN_ANGLE, angle))
-        self.kit.servo[SERVO_CHANNEL].angle = BASE_TURN_ANGLE + angle + self.offset
+        adjusted_angle = BASE_TURN_ANGLE + self.offset + angle - CENTER_TURN_ANGLE
+        
+        # Ensure the adjusted angle is within the range [0, 180]
+        adjusted_angle = max(0, min(180, adjusted_angle))
+        
+        self.kit.servo[SERVO_CHANNEL].angle = adjusted_angle
+        # angle = max(MIN_TURN_ANGLE, min(MAX_TURN_ANGLE, angle))
+        # self.kit.servo[SERVO_CHANNEL].angle = BASE_TURN_ANGLE + angle + self.offset
     
     def disable_controls(self):
         self.brake()
