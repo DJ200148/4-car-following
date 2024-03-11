@@ -91,14 +91,15 @@ class AutonomousRCController():
         if self.status != Status.READY:
             raise RuntimeError("The controller is not ready to start")
         # Set cords
-        # self.prev_cords = self.curr_cords
-        # self.start_cords = self.curr_cords
-        # self.end_cords = end_cords
+        curr_cords = self.gps.get_coordinates()
+        self.prev_cords = curr_cords
+        self.start_cords = curr_cords
+        self.end_cords = end_cords
 
         # Get the directions and path
-        # self.directions = self.google_maps.get_directions(self.start_cords, self.end_cords)
-        # self.path = self.google_maps.directions_to_path(self.directions)
-        # self.curr_path_target = self.path.pop()
+        self.directions = self.google_maps.get_directions(self.start_cords, self.end_cords)
+        self.path = self.google_maps.directions_to_path(self.directions)
+        self.curr_path_target = self.path.pop()
 
         # calibrate the position of the RC
         # self.calibrate_position()
@@ -196,7 +197,11 @@ class AutonomousRCController():
         self.rc.forward(speed)
 
         # check the current position and orientation of the RC then make any nessary adjustments for the global direction
-        current_cords = self.gps.get
+        current_cords = self.gps.get_coordinates()
+        
+        # calulate the angle of your location based on the vector from prev to next
+        
+        
 
     def make_right_turn_around_obstacle(self, speed, angle, turn_delay, forward_delay, full_turn_delay):
         # turn right

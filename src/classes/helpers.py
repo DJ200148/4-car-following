@@ -1,7 +1,62 @@
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
+import math
+from geopy.distance import geodesic
+from geopy.point import Point
 
+def calculate_bearing(lat1, lon1, lat2, lon2):
+    """
+    Calculates the bearing from point 1 to point 2.
+    
+    Parameters:
+    - lat1, lon1: Latitude and longitude of the first point.
+    - lat2, lon2: Latitude and longitude of the second point.
+    
+    Returns:
+    - Bearing in degrees.
+    """
+    lat1, lon1, lat2, lon2 = map(math.radians, [lat1, lon1, lat2, lon2])
+    delta_lon = lon2 - lon1
+
+    x = math.sin(delta_lon) * math.cos(lat2)
+    y = math.cos(lat1) * math.sin(lat2) - (math.sin(lat1) * math.cos(lat2) * math.cos(delta_lon))
+
+    initial_bearing = math.atan2(x, y)
+    initial_bearing = math.degrees(initial_bearing)
+    compass_bearing = (initial_bearing + 360) % 360
+
+    return compass_bearing
+
+def calculate_relative_direction(start_lat, start_lon, current_lat, current_lon, end_lat, end_lon):
+    """
+    Calculates whether to turn left or right from the current position to align
+    with the path defined by start and end points, and gives the angle with positive
+    for right and negative for left.
+    
+    Parameters:
+    - start_lat, start_lon: Latitude and longitude of the start position.
+    - current_lat, current_lon: Latitude and longitude of the current position.
+    - end_lat, end_lon: Latitude and longitude of the end position.
+    
+    Returns:
+    - A tuple containing the direction to turn ('LEFT' or 'RIGHT') and the angle in degrees.
+      The angle is positive for right turns and negative for left turns.
+    """
+    # Calculate bearings
+    start_to_current_bearing = calculate_bearing(start_lat, start_lon, current_lat, current_lon)
+    current_to_end_bearing = calculate_bearing(current_lat, current_lon, end_lat, end_lon)
+
+    # Calculate turn angle
+    turn_angle = (current_to_end_bearing - start_to_current_bearing + 360) % 360
+    if turn_angle > 180:
+        direction = 'LEFT'
+        turn_angle = 360 - turn_angle  # Make the angle negative for left turn
+        turn_angle *= -1
+    else:
+        direction = 'RIGHT'  # Angle remains positive for right turn
+    
+    return (direction, turn_angle)
 
 
 def get_turn_direction_from_depth_data(depth_image, low_threshold=500, high_threshold=1000):

@@ -170,14 +170,15 @@ class AutonomousRCController():
                     turn_delay = .75
                     forward_delay = .75
                     full_turn_delay = 1.9
-                    if direction == 'forward':
-                        self.do_forward_action(speed)
-                    elif direction == 'right':
-                        self.make_right_turn_around_obstacle(speed, angle, turn_delay, forward_delay, full_turn_delay)
-                    elif direction == 'left':
-                        self.make_left_turn_around_obstacle(speed, angle, turn_delay, forward_delay, full_turn_delay)
-                    else:
-                        self.rc.brake()
+                    self.do_forward_action(speed)
+                    # if direction == 'forward':
+                    #     self.do_forward_action(speed)
+                    # elif direction == 'right':
+                    #     self.make_right_turn_around_obstacle(speed, angle, turn_delay, forward_delay, full_turn_delay)
+                    # elif direction == 'left':
+                    #     self.make_left_turn_around_obstacle(speed, angle, turn_delay, forward_delay, full_turn_delay)
+                    # else:
+                    #     self.rc.brake()
 
                     # self.decide_action(depth_image)
         except Exception as e:
