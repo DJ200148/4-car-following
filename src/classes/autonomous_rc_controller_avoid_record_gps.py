@@ -26,9 +26,9 @@ class AutonomousRCController():
         
         self.rc = ConstrolSystem(self.offset)
         # self.yolop_model = YolopModel()
-        # self.gps = GPS()
+        self.gps = GPS()
         self.depth_camera = DepthCamera()
-        # self.google_maps = GoogleMaps()
+        self.google_maps = GoogleMaps()
 
         # Init threads
         self.pause_event = Event()  # This event controls the pause state.
@@ -93,6 +93,7 @@ class AutonomousRCController():
         if self.status != Status.READY:
             raise RuntimeError("The controller is not ready to start")
         # Set cords
+        test_path = [(38.557967, -121.756672), (38.557909, -121.756643)]
         curr_cords = self.gps.get_coordinates()
         self.start_cords = curr_cords
         self.end_cords = end_cords
@@ -230,12 +231,13 @@ class AutonomousRCController():
         # calulate the time to turn
         time_per_degree = time_for_360_at_45 / 360
         time = angle * time_per_degree
-        if angle < 0:
+        base_turn = 15
+        if angle < -base_turn:
             # left
             self.rc.turn(-45)
             sleep(time)
             self.rc.turn()
-        elif angle > 0:
+        elif angle > base_turn:
             # right
             self.rc.turn(45)
             sleep(time)
