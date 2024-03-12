@@ -32,7 +32,7 @@ shared_state = {'STOP': False}
 TEST_MODE = False
 LOW_THRESHOLD = 400
 HIGH_THRESHOLD = 700
-OFFSET = 9.5
+OFFSET = 9.75
 
 # Initialize the RC Controller
 controller = AutonomousRCController(test_mode=TEST_MODE, low_threshold=LOW_THRESHOLD, high_threshold=HIGH_THRESHOLD, offset=OFFSET) # this takes at least 60 seconds to initialize

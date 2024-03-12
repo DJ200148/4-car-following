@@ -202,7 +202,6 @@ class AutonomousRCController():
         self.rc.turn()
         self.rc.forward(speed)
 
-
         # check the current position and orientation of the RC then make any nessary adjustments for the global direction
         current_cords = self.gps.get_coordinates()
         
@@ -210,11 +209,12 @@ class AutonomousRCController():
         less_than_distance = .000036 # 4 meters
         distance = distance_between_points_cartesian(current_cords, self.curr_path_target)
         if distance <= less_than_distance:
-            # made it to the point get next
+            # Made it to the point get next
             try:
                 next = self.path.pop()
             except IndexError:
                 print("Made it to destination.")
+                self.rc.brake()
                 self.stop_event.set()
                 return
             
@@ -224,24 +224,24 @@ class AutonomousRCController():
             self.prev_path_target = self.curr_path_target
             self.curr_path_target = next
         
-        else:
-            # calulate the angle of your location based on the vector from prev to next
-            direction, angle = calculate_relative_direction(self.prev_path_target, current_cords, self.curr_path_target)
+        # else:
+        #     # calulate the angle of your location based on the vector from prev to next
+        #     direction, angle = calculate_relative_direction(self.prev_path_target, current_cords, self.curr_path_target)
         
-        # calulate the time to turn
-        time_per_degree = time_for_360_at_45 / 360
-        time = angle * time_per_degree
-        base_turn = 15
-        if angle < -base_turn:
-            # left
-            self.rc.turn(-45)
-            sleep(time)
-            self.rc.turn()
-        elif angle > base_turn:
-            # right
-            self.rc.turn(45)
-            sleep(time)
-            self.rc.turn()
+            # calulate the time to turn
+            time_per_degree = time_for_360_at_45 / 360
+            time = angle * time_per_degree
+            base_turn = 15
+            if angle < -base_turn:
+                # left
+                self.rc.turn(-45)
+                sleep(time)
+                self.rc.turn()
+            elif angle > base_turn:
+                # right
+                self.rc.turn(45)
+                sleep(time)
+                self.rc.turn()
             
         
 

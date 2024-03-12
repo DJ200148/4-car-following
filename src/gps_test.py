@@ -9,9 +9,9 @@ from classes.helpers import calculate_relative_direction
 # end = (38.557959, -121.758402) # Left
 
 # print(calculate_relative_direction(start, curr, end))
-maps = GoogleMaps()
-# gps = GPS()
-
+# maps = GoogleMaps()
+gps = GPS()
+print(gps.get_coordinates())
 # start = (38.557966, -121.757619)
 # end = (38.557803, -121.756577)
 

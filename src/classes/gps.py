@@ -38,7 +38,7 @@ class GPS:
             line = self.gps.readline().decode('utf-8').strip()
             data = line.split(',')
             coords = self._parse_coordinates(data)
-            if coords:
+            if coords is not (None, None):
                 self.last_valid_coordinates = coords
         except SerialException as e:
             print("Error reading GPS data:", e)
