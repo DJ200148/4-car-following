@@ -5,7 +5,7 @@ import time
 
 # Initialize model
 model = YOLO("yolov8n.pt").to('cuda')  # Use 'cuda' for GPU
-path = 'docs\\videos\\2024-03-10-[19-00]-capture - Trim.mp4'
+path = '/home/syed/Desktop/4-car-following/docs/videos/2024-03-10-[19-00]-capture - Trim.mp4'
 cap = cv2.VideoCapture(path)
 assert cap.isOpened(), "Error reading video file"
 w, h, fps = (int(cap.get(x)) for x in (cv2.CAP_PROP_FRAME_WIDTH, cv2.CAP_PROP_FRAME_HEIGHT, cv2.CAP_PROP_FPS))
