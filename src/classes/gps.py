@@ -1,11 +1,19 @@
 from serial import Serial, SerialException
 import numpy as np
+from time import sleep
 class GPS:
     def __init__(self, port='/dev/gps0', baudrate=9600, timeout=1):
         """Initialize GPS connection with a timeout to avoid blocking."""
         try:
             self.gps = Serial(port, baudrate, timeout=timeout)
             self.last_valid_coordinates = (None, None)  # Cache for last known coordinates
+            print("Waiting for gps to return data.")
+            while self.last_valid_coordinates != (None, None):
+                self.update()
+                sleep(0.1)
+            print("gps completed init.")
+                
+                
         except SerialException as e:
             raise RuntimeError("GPS connection failed") from e
 
@@ -38,7 +46,7 @@ class GPS:
             line = self.gps.readline().decode('utf-8').strip()
             data = line.split(',')
             coords = self._parse_coordinates(data)
-            if coords is not (None, None):
+            if coords:
                 self.last_valid_coordinates = coords
         except SerialException as e:
             print("Error reading GPS data:", e)

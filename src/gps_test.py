@@ -9,15 +9,17 @@ from classes.helpers import calculate_relative_direction
 # end = (38.557959, -121.758402) # Left
 
 # print(calculate_relative_direction(start, curr, end))
-# maps = GoogleMaps()
+maps = GoogleMaps()
 gps = GPS()
-print(gps.get_coordinates())
+start = gps.get_coordinates()
+print(start)
+gps.stop()
 # start = (38.557966, -121.757619)
-# end = (38.557803, -121.756577)
+end = (38.557762,-121.756574)
 
-# directions = maps.get_directions(start, end)
-# print("directions",directions)
+directions = maps.get_directions(start, end)
+print("directions",directions)
 
-# path = maps.directions_to_path(directions)
-# print("path", path)
+path = maps.directions_to_path(directions)
+print("path", path)
 

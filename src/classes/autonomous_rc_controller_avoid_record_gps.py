@@ -40,7 +40,13 @@ class AutonomousRCController():
         self.pause_event.set()
 
         # Init the start and end cords
-        
+        # Init the start and end cords
+        self.start_cords = None
+        self.end_cords = None
+        self.directions = None
+        self.path = None
+        self.prev_path_target = None
+        self.curr_path_target = None
         # self.prev_cords
         # self.start_cords
         # self.end_cords
@@ -77,13 +83,7 @@ class AutonomousRCController():
         # Set the event at the start so the loop runs
         self.pause_event.set()
 
-        # Init the start and end cords
-        self.start_cords
-        self.end_cords
-        self.directions
-        self.path
-        self.prev_path_target
-        self.curr_path_target
+        
         
         self.status = Status.READY
         
@@ -101,6 +101,7 @@ class AutonomousRCController():
         # Get the directions and path
         self.directions = self.google_maps.get_directions(self.start_cords, self.end_cords)
         self.path = self.google_maps.directions_to_path(self.directions)
+        print("path", self.path)
         self.prev_path_target = curr_cords
         self.curr_path_target = self.path.pop()
 
@@ -135,6 +136,7 @@ class AutonomousRCController():
         # Clean up
         # self.gps.stop()
         self.depth_camera.stop()
+        self.gps.stop()
 
     def start_video_capture(self):
         self.yolo_capture_event.clear()
@@ -204,7 +206,7 @@ class AutonomousRCController():
 
         # check the current position and orientation of the RC then make any nessary adjustments for the global direction
         current_cords = self.gps.get_coordinates()
-        
+        print("Curr", current_cords)
         # check if youve reached the 
         less_than_distance = .000036 # 4 meters
         distance = distance_between_points_cartesian(current_cords, self.curr_path_target)

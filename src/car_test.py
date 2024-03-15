@@ -10,7 +10,8 @@ sys.turn(45)
 sys.forward(65)
 print("drove")
 
-time.sleep(23.5)
+# time.sleep(23.5)
+time.sleep(2)
 print("slept")
 
 sys.brake()
