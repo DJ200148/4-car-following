@@ -1,11 +1,8 @@
+![front image or gif](To do)
+
 # NavigateNCount 
 
 Leveraging the YOLOv8 model for precise object detection, integrating depth maps for collision avoidance, and incorporating a GPS receiver alongside the Google Maps API,  to create a comprehensive system for autonomous navigation and obstacle avoidance.
-
-Link to YoloV8 GitHub: https://github.com/ultralytics/ultralytics
-
-Link to Google Maps Services Python GitHub: https://github.com/googlemaps/google-maps-services-python.git
-
 
 # Introduction 
 ##### Abstract
@@ -13,6 +10,9 @@ this project employs a multi-sensor approach, utilizing depth data, RGB data, NM
 
 
 ##### Result
+[![Demo]()](https://drive.google.com/file/d/1BJGMtsHnUzpo0R-g2AMyS3Ler2OTes1d/view?t=2)
+
+
 # Using ML
 
 ##### YOLOv8 Model
@@ -20,12 +20,38 @@ this project employs a multi-sensor approach, utilizing depth data, RGB data, NM
 ##### Depth Algorithm
 
 # Setting up
-##### Software and Hardware Requirement 
+#### Software and Hardware Requirement 
 Python 3.8 or later.
 
-A Google Maps API key.
+Jetson TX2 or any developer board
 
-# Desgin and Implementation
+Google Maps API key.
+
+Gps receiver
+
+RGBD camera
+
+PCA9685 board
+
+Traxxas RC or any similar RC 
+
+For hardware setup, go to this youtube [link](https://www.youtube.com/playlist?list=PLXYLzZ3XzIbi3djynrdC1ofn-54WpIFbN) to setup your RC car. We also included some of the files that were used in the video in our repo.
+
+For software setup, follow these steps:
+
+    1. Clone the repository to your desktop
+
+    2. Run the check_install_libraries.py
+
+Running our code:
+
+    1. Run the main.py in src to run our code
+
+    2. Navigate to the ip address of the jetson board, or the ip address of your board, with port 5000 where the web interface is hosted
+       ex: 192.168.0.16:5000 
+    3. On the web interface, click on status icon and if the status says "ready" then everything is setup properly. If not ready, then check the terminal for errors. 
+
+# Design and Implementation
 
 ##### Pipeline
 
@@ -54,3 +80,7 @@ Chat GPT
 
 # Reference links
 [Yolo Repository](https://github.com/ultralytics/ultralytics)
+
+[Google Maps Services Python GitHub](https://github.com/googlemaps/google-maps-services-python.git)
+
+[Steering and throtlle calibration](https://github.com/jetsonhacks/jetsonRACECAR)
