@@ -21,7 +21,7 @@ Furthermore, this approach emphasizes cost-effectiveness. By leveraging affordab
 ## Machine Learning Used
 
 ### Counter based on YOLOv8
-In this project we use YOLOv8 nano model for detection and counting, below is a image showing the counter working. 
+In this project we use YOLOv8 nano model for detection and counting, below is an image showing the counter working. 
 
 ![Counter Working](/docs/images/YoloTestRoad.png)
 
@@ -50,7 +50,7 @@ Segmented data from RC POV in order to make a depth map to check for objects in 
 
 - Traxxas RC or any similar RC  
 
-For hardware setup, go to this youtube [link](https://www.youtube.com/playlist?list=PLXYLzZ3XzIbi3djynrdC1ofn-54WpIFbN) to setup your RC car. We also included some of the files that were used in the video in our repo.
+For hardware setup, go to this YouTube [link](https://www.youtube.com/playlist?list=PLXYLzZ3XzIbi3djynrdC1ofn-54WpIFbN) to set up your RC car. We also included some of the files that were used in the video in our repo.
 
 
 ### Software Setup
@@ -60,30 +60,30 @@ For software setup, follow these steps:
 
 2. Run the check_install_libraries.py in the root directory to install all the required libraries
 
-    3. Set up a .env file with Google API key or addjust google_maps.py in class and erase env loader and set key = to Google API key
+    3. Set up a .env file with Google API key or adjust google_maps.py in class erase env loader and set key = to Google API key
 
 Running our code:
 
 1. Run the main.py in src to run our code
 
-2. Navigate to the ip address of the jetson board, or the ip address of your board, with port 5000 where the web interface is hosted
+2. Navigate to the IP address of the jetson board, or the IP address of your board, with port 5000 where the web interface is hosted
     . ex: 192.168.0.16:5000
 
 
-3. On the web interface, click on status icon and if the status says "ready" then everything is setup properly. If not ready, then check the terminal for errors. 
+3. On the web interface, click on the status icon and if the status says "ready" then everything is setup properly. If not ready, then check the terminal for errors. 
 
 
 
 ### Web Interface 
 ![Image of Web Interface Depth Stream](/docs/images/UI_Depth_Example.PNG)
 
-The web interface is hosted on the jetson board using Flask and can be accessed by navigating to the ip address of the jetson board, or the ip address of your board, with port 5000 for testing purposes.
+The web interface is hosted on the Jetson board using Flask and can be accessed by navigating to the IP address of the Jetson board, or the IP address of your board, with port 5000 for testing purposes.
 - Start: Allows the user to input the destination coordinates and start the car.
 - Status: Returns the status of the car. ("ready", "running", "stopped", "paused")
 - Pause: Pauses the car.
 - Resume: Resumes the car.
 - Reset: Resets the car to the ready state.
-- Shutdown: Shuts down the entire system.
+- Shutdown: Shut down the entire system.
 - Stream Play: Starts the stream of the camera.
 - Stream Stop: Stops the stream of the camera.
 - Depth Play: Starts the depth stream and stops the RGB stream.
@@ -92,20 +92,18 @@ The web interface is hosted on the jetson board using Flask and can be accessed 
 ## Design and Implementation
 
 ### Pipeline
-![Image of Pipeline](/docs/images/Pipeline.PNG)
+![Image of Pipeline](/docs/images/pipeline.PNG)
 
-First, the camera provides RGB and depth data; the former is processed asynchronously in the image thread. Depth data undergoes analysis, influencing whether the RC must avoid obstacles. Prioritizing safety, collision avoidance activates the protocol to safely navigate around obstacles, realigning with the intended path, following a polyline route. When not avoiding obstacles, the RC assesses its local position globally using GPS data, adjusting its direction based on orientation and polyline cues. Upon nearing a polyline endpoint, it aligns to the next segment. This cycle repeats throughout the operation.
+First, the camera provides RGB and depth data; the former is processed asynchronously in the image thread. Depth data undergoes analysis, influencing whether the RC must avoid obstacles. Prioritizing safety, collision avoidance activates the protocol to safely navigate around obstacles, realigning with the intended path, and following a polyline route. When not avoiding obstacles, the RC assesses its local position globally using GPS data, adjusting its direction based on orientation and polyline cues. Upon nearing a polyline endpoint, it aligns to the next segment. This cycle repeats throughout the operation.
 
 ### Object Avoidance and Camera
-The navigation protocol is very simple, where when an obsticle is detected the car will naviagetes its way around it using synchrouns timeing delays. We plan on adding more advances methods such as road segmentation, lane detection, and advanced path planning in the future.
+The navigation protocol is very simple, where when an obstacle is detected the car will navigate its way around it using synchronous time delays. We plan on adding more advanced methods such as road segmentation, lane detection, and advanced path planning in the future.
 
 ### Steering and Throttle Controls
-After runing the code from the PCA8695the car should start turning left, right, and repeat.
-
+After running the code from the PCA8695the car should start turning left, right, and repeat.
 
 After you have followed the youtube, the car should be able to move forward and backward.
 
-aceca  
 
 ### GPS and Path Following
 
@@ -119,11 +117,11 @@ direction of travel, the car adjusts its orientation using vector and angle math
 # Acknowledgement
 Kartik Patwari
 
-Providing help with debugging and fixing broken board. Offering assistance with any coding questions.
+Providing help with debugging and fixing broken boards. Offering assistance with any coding questions.
 
 Professor Chen-Nee Chuah
 
-Providing the class and opportunity to learn deeper about machine learning.
+Providing the class an opportunity to learn more about machine learning.
 
 
 # Reference links
