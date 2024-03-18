@@ -92,7 +92,7 @@ The web interface is hosted on the Jetson board using Flask and can be accessed 
 ## Design and Implementation
 
 ### Pipeline
-![Image of Pipeline](/docs/images/pipeline.PNG)
+![Image of Pipeline](/docs/images/pipeline.png)
 
 First, the camera provides RGB and depth data; the former is processed asynchronously in the image thread. Depth data undergoes analysis, influencing whether the RC must avoid obstacles. Prioritizing safety, collision avoidance activates the protocol to safely navigate around obstacles, realigning with the intended path, and following a polyline route. When not avoiding obstacles, the RC assesses its local position globally using GPS data, adjusting its direction based on orientation and polyline cues. Upon nearing a polyline endpoint, it aligns to the next segment. This cycle repeats throughout the operation.
 
