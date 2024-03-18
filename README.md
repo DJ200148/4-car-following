@@ -12,6 +12,11 @@ Furthermore, this approach emphasizes cost-effectiveness. By leveraging affordab
 
 
 ### Result
+
+
+https://github.com/DJ200148/4-car-following/assets/72373027/6540fe27-aac6-4f53-aa60-5784a06856b3
+
+
 [![Object Avoidance Demo]()](https://drive.google.com/file/d/1BJGMtsHnUzpo0R-g2AMyS3Ler2OTes1d/view?t=2)
 
 
@@ -100,9 +105,10 @@ First, the camera provides RGB and depth data; the former is processed asynchron
 The navigation protocol is very simple, where when an obstacle is detected the car will navigate its way around it using synchronous time delays. We plan on adding more advanced methods such as road segmentation, lane detection, and advanced path planning in the future.
 
 ### Steering and Throttle Controls
-After running the code from the PCA8695the car should start turning left, right, and repeat.
+After you have followed the youtube, the car should be able to move forward and backward and turning left, right, and repeat.
 
-After you have followed the youtube, the car should be able to move forward and backward.
+https://github.com/DJ200148/4-car-following/assets/72373027/09a12043-bf78-4df7-832b-312d38e76a95
+
 
 
 ### GPS and Path Following
