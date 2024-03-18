@@ -23,12 +23,12 @@ Furthermore, this approach emphasizes cost-effectiveness. By leveraging affordab
 ### Counter based on YOLOv8
 In this project we use YOLOv8 nano model for detection and counting, below is a image showing the counter working. 
 
-![Counter Working](/docs/images/YoloTestRoad.PNG)
+![Counter Working](/docs/images/YoloTestRoad.png)
 
 ### Depth Algorithm for Object Detection and Avoidance
 Segmented data from RC POV in order to make a depth map to check for objects in the way.
 
-![Depth detection Working](/docs/images/RCcarPOV.PNG)
+![Depth detection Working](/docs/images/RCcarPOV.png)
 
 ## Setting Up and Using
 ### Software and Hardware Requirement 
