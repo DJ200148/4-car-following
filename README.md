@@ -140,9 +140,9 @@ Providing the class an opportunity to learn more about machine learning.
 
 [PCA9685 Driver](https://github.com/jetsonhacks/JHPWMDriver)
 
-[1] Gakstatter, Eric. “What Exactly Is GPS NMEA Data? - GPS World.” GPS World - The Business and Technology of Global Navigation and Positioning, 4 Feb. 2015, www.gpsworld.com/what-exactly-is-gps-nmea-data/. 
+[The Business and Technology of Global Navigation and Positioning](www.gpsworld.com/what-exactly-is-gps-nmea-data/)
 
-[2] rishabsingh3003. “Rishabsingh3003/Vision-Obstacle-Avoidance:, github.com/rishabsingh3003/Vision-Obstacle-Avoidance
+[Rishabsingh3003/Vision-Obstacle-Avoidance](github.com/rishabsingh3003/Vision-Obstacle-Avoidance)
 
 [YOLOv8](https://github.com/ultralytics/ultralytics)
 
