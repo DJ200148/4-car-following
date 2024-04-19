@@ -10,7 +10,8 @@ cap = cv2.VideoCapture(path)
 assert cap.isOpened(), "Error reading video file"
 w, h, fps = (int(cap.get(x)) for x in (cv2.CAP_PROP_FRAME_WIDTH, cv2.CAP_PROP_FRAME_HEIGHT, cv2.CAP_PROP_FPS))
 
-region_points = [(20, 400), (1080, 404), (1080, 360), (20, 360)]
+line_points = [(650, 400), (1080, 400)]  # line or region points
+classes_to_count = [0, 2]  # person and car classes for count
 
 video_writer = cv2.VideoWriter("object_counting_output.avi",
                        cv2.VideoWriter_fourcc(*'mp4v'),
@@ -19,9 +20,11 @@ video_writer = cv2.VideoWriter("object_counting_output.avi",
 
 counter = object_counter.ObjectCounter()
 counter.set_args(view_img=True,
-                 reg_pts=region_points,
+                 reg_pts=line_points,
                  classes_names=model.names,
-                 draw_tracks=True)
+                 draw_tracks=True,
+                 view_in_counts = False,
+                 line_thickness=2)
 
 frame_count = 0
 total_start_time = time.time()
@@ -31,20 +34,20 @@ count_times = []
 
 while cap.isOpened():
     success, im0 = cap.read()
+
+
+
     if not success:
         break
     frame_start_time = time.time()
-
     # Detection and Tracking
     detect_start_time = time.time()
-    tracks = model.track(im0, persist=True, show=False)
+    tracks = model.track(im0, persist=True, show=False, classes= classes_to_count)
     detect_end_time = time.time()
-
     # Counting
     count_start_time = time.time()
     im0 = counter.start_counting(im0, tracks)
     count_end_time = time.time()
-
     video_writer.write(im0)
     frame_end_time = time.time()
 
