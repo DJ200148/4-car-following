@@ -1,4 +1,4 @@
- # NavigateNCount 
+ # NavNScan
 
 Leveraging the YOLOv8 model for precise object detection, integrating depth maps for collision avoidance, and incorporating a GPS receiver alongside the Google Maps API, to create a comprehensive system for autonomous navigation and obstacle avoidance.
 
