@@ -11,7 +11,7 @@ from classes.depth_camera import DepthCamera
 from classes.helpers import get_turn_direction_from_depth_data
 from classes.google_maps import GoogleMaps
 from classes.status_enum import Status
-from classes.autonomous_rc_controller_interface import AutonomousRCControllerInterface
+from classes.other.autonomous_rc_controller_interface import AutonomousRCControllerInterface
 
 class AutonomousRCController(AutonomousRCControllerInterface):
     def __init__(self, test_mode=False, low_threshold=400, high_threshold=700, offset=7):
