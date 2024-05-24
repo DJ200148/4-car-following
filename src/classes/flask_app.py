@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request, render_template, Response
-from classes.other.autonomous_rc_controller_avoid_record_gps import AutonomousRCController
+from classes.autonomous_rc_controller_min import AutonomousRCController
 from classes.status_enum import Status
 import time
 # from classes.autonomous_rc_controller_interface import AutonomousRCControllerInterface

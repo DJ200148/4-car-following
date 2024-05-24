@@ -7,11 +7,7 @@ from datetime import datetime
 
 # Classes
 # from classes.yolop_model import YolopModel
-from classes.control_system import ConstrolSystem
-from classes.gps import GPS
 from classes.depth_camera import DepthCamera
-from classes.helpers import get_turn_direction_from_depth_data, calculate_relative_direction, distance_between_points_cartesian
-from classes.google_maps import GoogleMaps
 from classes.status_enum import Status
 from classes.yolop_model import YolopModel
 # from classes.autonomous_rc_controller_interface import AutonomousRCControllerInterface
@@ -25,7 +21,7 @@ class AutonomousRCController():
         self.save_dir = save_dir
         self.status = Status.READY
         
-        self.yolop_model = YolopModel()
+        self.yolop_model = YolopModel(weights='./weights/yolov8n.pt', device='cuda')
         self.depth_camera = DepthCamera()
 
         # Init threads
@@ -123,7 +119,10 @@ class AutonomousRCController():
                 self.pause_event.wait()  # Wait will block if the event is cleared, simulating a pause
                 if self.stop_event.is_set(): break
                 _, depth_image, _ = self.depth_camera.get_image_data()
+                print(depth_image.shape)
+                # Send image through model
                 
+                # 
                 
                 
                 
@@ -136,6 +135,7 @@ class AutonomousRCController():
             # self.yolo_capture_event.set()
             # if self.video_capture_thread is not None:
             #     self.video_capture_thread.join()
+            pass
 
 
     

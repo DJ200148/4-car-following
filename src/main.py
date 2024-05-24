@@ -1,4 +1,5 @@
 # Here we will combine all the pipelines and run them in a sequence
+import torch
 
 # Imports
 import os, signal, time, threading
