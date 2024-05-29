@@ -4,13 +4,12 @@ import numpy as np
 import traceback
 import cv2
 from datetime import datetime
+import torch
 
 # Classes
-# from classes.yolop_model import YolopModel
 from classes.depth_camera import DepthCamera
 from classes.status_enum import Status
-from classes.yolop_model import YolopModel
-# from classes.autonomous_rc_controller_interface import AutonomousRCControllerInterface
+from classes.yolo_model import YoloModel
 
 class AutonomousRCController():
     def __init__(self, test_mode=False, low_threshold=400, high_threshold=700, offset=7, save_dir='./output'):
@@ -21,7 +20,7 @@ class AutonomousRCController():
         self.save_dir = save_dir
         self.status = Status.READY
         
-        self.yolop_model = YolopModel(weights='./weights/yolov8n.pt', device='cuda')
+        self.yolo_model = YoloModel(weights='./weights/yolov8n.pt', device='cuda')
         self.depth_camera = DepthCamera()
 
         # Init threads
@@ -61,7 +60,7 @@ class AutonomousRCController():
         
 
     # Operations
-    def start(self, end_cords):
+    def start(self, end_cords=None):
         if self.status != Status.READY:
             raise RuntimeError("The controller is not ready to start")
 
@@ -92,40 +91,41 @@ class AutonomousRCController():
         # Clean up
         self.depth_camera.stop()
 
-    # def start_video_capture(self):
-    #     self.yolo_capture_event.clear()
-    
-    #     # Get the current date
-    #     current_datetime = datetime.now()
-    #     formatted_datetime = current_datetime.strftime('%Y-%m-%d-[%H-%M]')
-    #     self.video_writer = cv2.VideoWriter(f'{self.save_dir}/{formatted_datetime}-capture.mp4', cv2.VideoWriter_fourcc(*'mp4v'), 30, (640, 480))
-        
-    #     while not self.yolo_capture_event.is_set():
-    #         color_image, _, _ = self.depth_camera.get_image_data()
-    #         if color_image is not None:
-    #             self.video_writer.write(color_image)
-        
-    #     self.video_writer.release()
 
     # The main loop
     def run(self):
         try:
-             # Start the video capture thread
-            # self.yolo_capture_event.clear()
-            # self.video_capture_thread = Thread(target=self.start_video_capture)
-            # self.video_capture_thread.start()
-            
             while not self.stop_event.is_set():
                 self.pause_event.wait()  # Wait will block if the event is cleared, simulating a pause
                 if self.stop_event.is_set(): break
+                
+                # Get image data
                 _, depth_image, _ = self.depth_camera.get_image_data()
-                print(depth_image.shape)
-                # Send image through model
                 
-                # 
+                # Convert image to the models specs (RGB format and resized to 640x640)
+                if image.shape[2] == 1:
+                    image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
+                elif image.shape[2] == 4:
+                    image = cv2.cvtColor(image, cv2.COLOR_BGRA2RGB)
+                else:
+                    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
                 
+                image = cv2.resize(image, (640, 640))
                 
+                # Convert the image to a tensor and normalize
+                image_tensor = torch.tensor(image).float().permute(2, 0, 1).unsqueeze(0) / 255.0
+                print(image_tensor.shape)
                 
+                # Perform detection
+                results = self.yolo_model.detect(image_tensor)
+    
+                # Calulate bounding boxes and count (Look into any pre built methods that work with yolo to count and detect)
+                image_with_detections = self.yolo_model.draw_detections(image, results)
+                
+                # Save image to buffer for UI to gather (Concurrent safe buffer?)
+                buff = image_with_detections
+                
+                # Repeat till paused
                     
         except Exception as e:
             print(f"An error occurred: {e}")
@@ -136,6 +136,3 @@ class AutonomousRCController():
             # if self.video_capture_thread is not None:
             #     self.video_capture_thread.join()
             pass
-
-
-    
