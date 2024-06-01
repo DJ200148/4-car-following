@@ -1,45 +1,60 @@
-from classes.depth_camera import DepthCamera
+import threading
 import cv2
-from classes.yolo_model import YoloModel
 import torch
+from classes.depth_camera import DepthCamera
+from classes.yolo_model import YoloModel
 
-# Initialize camera and model
-cam = DepthCamera()
-model = YoloModel('../weights/yolov8n.pt', device='cuda')
+def detect_objects(cam, model):
+    while True:
+        image, depth, depth_colormap = cam.get_image_data()
+        
+        # Ensure the image is in RGB format and resized to 640x640
+        if image.shape[2] == 1:
+            image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
+        elif image.shape[2] == 4:
+            image = cv2.cvtColor(image, cv2.COLOR_BGRA2RGB)
+        else:
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        
+        image = cv2.resize(image, (640, 640))
+        
+        # Convert the image to a tensor and normalize
+        image_tensor = torch.tensor(image).float().permute(2, 0, 1).unsqueeze(0) / 255.0
+        image_tensor = image_tensor.to(model.device)
+        print(image_tensor.shape)
+        
+        # Perform detection
+        results = model.detect(image_tensor)
+        print(results)
+        
+        # Draw detections
+        image_with_detections = model.draw_detections(image, results)
+        
+        # Display the images
+        cv2.imshow('Color Image', image_with_detections)
+        
+        # Check for user input to close the window
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
 
-print("Init done")
+    # Close all windows
+    cv2.destroyAllWindows()
+    cam.stop()
 
-while True:
-    image, depth, depth_colormap = cam.get_image_data()
+def main():
+    # Initialize camera and model
+    cam = DepthCamera()
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    model = YoloModel('../weights/yolov8n.pt', device=device)
     
-    # Ensure the image is in RGB format and resized to 640x640
-    if image.shape[2] == 1:
-        image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
-    elif image.shape[2] == 4:
-        image = cv2.cvtColor(image, cv2.COLOR_BGRA2RGB)
-    else:
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    print("Init done")
     
-    image = cv2.resize(image, (640, 640))
+    # Create and start the detection thread
+    detection_thread = threading.Thread(target=detect_objects, args=(cam, model))
+    detection_thread.start()
     
-    # Convert the image to a tensor and normalize
-    image_tensor = torch.tensor(image).float().permute(2, 0, 1).unsqueeze(0) / 255.0
-    print(image_tensor.shape)
-    
-    # Perform detection
-    results = model.detect(image_tensor)
-    print(results)
-    
-    # Draw detections
-    image_with_detections = model.draw_detections(image, results)
-    
-    # Display the images
-    cv2.imshow('Color Image', image_with_detections)
-    
-    # Check for user input to close the window
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+    # Join the thread to wait for its completion
+    detection_thread.join()
 
-# Close all windows
-cv2.destroyAllWindows()
-cam.stop()
+if __name__ == "__main__":
+    main()

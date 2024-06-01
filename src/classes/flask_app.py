@@ -87,7 +87,8 @@ def create_app(controller: AutonomousRCController, index_page_path, template_fol
         while True:
             while controller.get_status() != Status.READY and controller.get_status() != Status.RUNNING and controller.get_status() != Status.PAUSED:
                 pass
-            frame = controller.depth_camera.get_jpeg_color_image_frame(True)
+            # frame = controller.depth_camera.get_jpeg_color_image_frame(True)
+            frame = controller.get_latest_detect_image()
             if frame:
                 yield (b'--frame\r\n'
                     b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')

@@ -7,14 +7,16 @@ import torchvision.ops as ops
 class YoloModel:
     def __init__(self, model_name='yolov8n.pt', device='cpu'):
         self.model = YOLO(model_name)
-        
+        print("Created model")
         # Set the device
         self.device = device
         self.model.to(device)
+        print("Moved model to:", device)
         
     def detect(self, image):
         # Ensure the image is on the correct device
         image = image.to(self.device)
+        print("doing detection")
         results = self.model(image)
         
         # Extract bounding boxes, scores, and class predictions
