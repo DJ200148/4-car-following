@@ -16,7 +16,6 @@ class YoloModel:
     def detect(self, image):
         # Ensure the image is on the correct device
         image = image.to(self.device)
-        print("doing detection")
         results = self.model(image)
         
         # Extract bounding boxes, scores, and class predictions
@@ -49,6 +48,10 @@ class YoloModel:
 
         # Iterate through the results
         for box, cls, conf in zip(boxes, classes, confidences):
+            if conf < 0.5:
+                continue
+            if int(cls) != 0:
+                continue
             x1, y1, x2, y2 = map(int, box)
             label = f'{int(cls)} {conf:.2f}'
             cv2.rectangle(image, (x1, y1), (x2, y2), (255, 0, 0), 2)
