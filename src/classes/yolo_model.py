@@ -2,7 +2,7 @@ from ultralytics import YOLO
 import cv2
 import numpy as np
 import torch
-import torchvision.ops as ops
+from torchvision.ops import nms
 
 class YoloModel:
     def __init__(self, model_name='yolov8n.pt', device='cpu'):
@@ -16,24 +16,33 @@ class YoloModel:
     def detect(self, image):
         # Ensure the image is on the correct device
         image = image.to(self.device)
-        results = self.model(image)
+        with torch.no_grad():
+            results = self.model(image)
         
         # Extract bounding boxes, scores, and class predictions
-        boxes = results[0].boxes.xyxy.to('cpu')
-        scores = results[0].boxes.conf.to('cpu')
-        classes = results[0].boxes.cls.to('cpu')
+        boxes = results[0].boxes.xyxy.to(self.device)
+        scores = results[0].boxes.conf.to(self.device)
+        classes = results[0].boxes.cls.to(self.device)
         iou_thres = 0.5  # Example IoU threshold
 
         # Apply NMS on CPU
-        indices = ops.nms(boxes, scores, iou_thres)
+        indices = nms(boxes, scores, iou_thres)
         
         # Filter results based on NMS
-        boxes = boxes[indices]
-        scores = scores[indices]
-        classes = classes[indices]
+        boxes = boxes[indices].cpu()
+        scores = scores[indices].cpu()
+        classes = classes[indices].cpu()
         
         return {'boxes': boxes, 'scores': scores, 'classes': classes}
 
+    def track(self, image):
+        # Ensure the image is on the correct device
+        # image = image.to(self.device)
+        with torch.no_grad():
+            results = self.model.track(source=image, classes=[0])
+        
+        return results
+    
     def draw_detections(self, image, results):
         # Ensure the image is a NumPy array in the correct format
         image = np.array(image)

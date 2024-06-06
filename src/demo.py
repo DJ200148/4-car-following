@@ -10,12 +10,14 @@ from classes.depth_camera import DepthCamera
 from classes.yolo_model import YoloModel
 from classes.status_enum import Status
 from threading import Lock
+from ultralytics import solutions
 
 # GLOBALS
 detect_buf = None
 detect_lock = Lock()
 model = None
 cam = None
+counter = None
 # Define a shared state object
 shared_state = Status.STOPPED
 
@@ -168,8 +170,10 @@ def run_flask():
     app.run(debug=True, use_reloader=False, host='0.0.0.0', port=5000)
 
 def make_model():
+    global counter
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     model = YoloModel('../weights/yolov8n.pt', device=device)
+    counter = solutions.ObjectCounter(classes_names=model.model.names, reg_pts=[(0,0), (0, 480), (640, 480), (640, 0)], line_thickness=1, region_thickness=2)
     return model
 
 # Function to handle object detection
@@ -179,6 +183,7 @@ def detect_objects():
     global shared_state
     global model
     global cam
+    global counter
     
     print("Detection thread started")
     while shared_state != Status.STOPPED:
@@ -189,23 +194,38 @@ def detect_objects():
         try:
             image, depth, depth_colormap = cam.get_image_data()
             
-            if image.shape[2] == 1:
-                image = cv2.cvtColor(image, cv2.COLOR_BGRA2RGB)
-            elif image.shape[2] == 4:
-                image = cv2.cvtColor(image, cv2.COLOR_BGRA2RGB)
-            else:
-                image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+            # if image.shape[2] == 1:
+            #     image = cv2.cvtColor(image, cv2.COLOR_BGRA2RGB)
+            # elif image.shape[2] == 4:
+            #     image = cv2.cvtColor(image, cv2.COLOR_BGRA2RGB)
+            # else:
+            #     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             
-            image = cv2.resize(image, (640, 640))
+            # image = cv2.resize(image, (640, 640))
             
             # Convert the image to a tensor and normalize
-            image_tensor = torch.tensor(image).float().permute(2, 0, 1).unsqueeze(0) / 255.0
+            # image_tensor = torch.tensor(image).float().permute(2, 0, 1).unsqueeze(0) / 255.0
             
             # Perform detection
-            results = model.detect(image_tensor)
+            results = model.track(image)
             
+            # # Filter results to keep only "person" class
+            # filtered_results = {'boxes': [], 'scores': [], 'classes': []}
+            # for box, score, cls in zip(results['boxes'], results['scores'], results['classes']):
+            #     if cls == 'person':
+            #         filtered_results['boxes'].append(box)
+            #         filtered_results['scores'].append(score)
+            #         filtered_results['classes'].append(cls)
+
+            # # Convert lists back to tensors
+            # filtered_results['boxes'] = torch.stack(filtered_results['boxes'])
+            # filtered_results['scores'] = torch.stack(filtered_results['scores'])
+            # filtered_results['classes'] = torch.stack(filtered_results['classes'])
+
+            # Update object counter and draw detections
+            image_with_detections = counter.start_counting(image, results)
             # Draw detections
-            image_with_detections = model.draw_detections(image, results)
+            # image_with_detections = model.draw_detections(image, results)
             
             with detect_lock:
                 detect_buf = image_with_detections
